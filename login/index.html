@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/css/style.css" />
+    <title>Login</title>
+    <script src="./login.js" type="module"></script>
+  </head>
+  <body
+    class="bg-secondary flex items-center justify-center min-h-screen font-roboto"
+  >
+    <div class="p-8 max-w-md">
+      <div>
+        <img
+          src="/public/images/bidalong-logo02.png"
+          alt="Bidalong logo"
+          class="w-full bg-secondary"
+        />
+      </div>
+      <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-semibold mb-2">Login</h1>
+        <p class="text-gray-500 mb-6">Sign in to your account</p>
+        <form
+          id="login-form"
+          name="login"
+          method="POST"
+          aria-labelledby="login-form"
+        >
+          <div class="mb-4">
+            <label class="block text-gray-700" for="email">Email</label>
+            <div class="relative mb-6">
+              <div
+                class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
+              >
+                <svg
+                  class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 16"
+                >
+                  <path
+                    d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z"
+                  />
+                  <path
+                    d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z"
+                  />
+                </svg>
+              </div>
+              <input
+                class="w-full ps-10 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                id="email"
+                type="email"
+                name="email"
+                required
+              />
+            </div>
+
+            <div class="mb-4 relative">
+              <label class="block text-gray-700" for="password">Password</label>
+              <div class="relative mb-6">
+                <div
+                  class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+                >
+                  <svg
+                    class="w-6 h-6 text-gray-500 dark:text-gray-400"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  class="w-full ps-10 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  type="password"
+                  name="password"
+                  id="password"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                id="login-btn"
+                class="w-full bg-primary_button text-black py-2 rounded-lg hover:bg-primary_button_hover transition duration-200 cursor-pointer"
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        </form>
+        <div class="text-secondary flex justify-center mt-6 hover:underline">
+          <a class="cursor-pointer" href="/register/"
+            >Don't have an account yet?</a
+          >
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
