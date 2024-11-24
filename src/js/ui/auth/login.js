@@ -1,4 +1,5 @@
 import { login } from '../../api/auth/login';
+import { showToast } from '../../utilities/toast.js';
 
 export async function onLogin(event) {
   event.preventDefault();
@@ -11,15 +12,19 @@ export async function onLogin(event) {
     return;
   }
   try {
-    const data = await login({ email, password });
-    console.log(data);
-    if (data.error) {
-      alert(data.error);
+    const loginData = await login({ email, password });
+    if (loginData.error) {
+      alert(loginData.error);
       return;
     }
-    localStorage.setItem('token', data.data.accessToken);
-    localStorage.setItem('userID', data.data.name);
-    window.location.href = '/';
+    localStorage.setItem('token', loginData.data.accessToken);
+    localStorage.setItem('userID', loginData.data.name);
+
+    showToast(`Welcome, ${loginData.data?.name}!`);
+
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
   } catch (error) {
     console.error('Error occurred:', error);
     alert('An unexpected error occurred. Please try again.');

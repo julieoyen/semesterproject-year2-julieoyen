@@ -1,4 +1,6 @@
 import { register } from '../../api/auth/register.js';
+import { login } from '../../api/auth/login.js';
+import { showToast } from '../../utilities/toast.js';
 
 export async function onRegister(event) {
   event.preventDefault();
@@ -14,15 +16,27 @@ export async function onRegister(event) {
   }
 
   try {
-    const data = await register({ name, email, password });
-    if (data.error) {
-      alert(data.error);
+    const registrationData = await register({ name, email, password });
+    if (registrationData.error) {
+      alert(registrationData.error);
       return;
     }
-    localStorage.setItem('token', data.data.accessToken);
-    localStorage.setItem('userID', data.data.name);
-    alert(`User: ${data.data.name} (${data.data.email}) created`);
-    window.location.href = '/';
+    const loginData = await login({ email, password });
+
+    if (loginData.error) {
+      alert(
+        'Registration was successful, but login failed. Please try to login again.'
+      );
+    }
+
+    localStorage.setItem('token', loginData.data?.accessToken);
+    localStorage.setItem('userID', loginData.data?.name);
+
+    showToast(`Welcome, ${loginData.data?.name}!`);
+
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
   } catch (error) {
     console.error('Error occurred:', error);
     alert('An unexpected error occurred. Please try again.');

@@ -1,11 +1,6 @@
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  css: {
-    preprocessorOptions: {
-      css: {
-        charset: false,
-      },
-    },
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
   },
-});
+};
