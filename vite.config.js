@@ -4,6 +4,9 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   appType: 'mpa',
   base: '',
+  css: {
+    postcss: './postcss.config.js',
+  },
   build: {
     target: 'esnext',
     rollupOptions: {
