@@ -20,7 +20,7 @@ export async function onLogin(event) {
     localStorage.setItem('token', data.data.accessToken);
     localStorage.setItem('userID', data.data.name);
 
-    showToast(`Welcome, ${data.data?.name}!`);
+    showToast(`Welcome back, ${data.data?.name}!`);
 
     setTimeout(() => {
       window.location.href = '/';
