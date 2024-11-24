@@ -8,9 +8,8 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/src/css/style.css" />
+    <script type="module" src="/src/app.js"></script>
     <title>Login</title>
-    <script src="./login.js" type="module"></script>
   </head>
   <body
     class="bg-secondary flex items-center justify-center min-h-screen font-roboto"
@@ -106,11 +105,15 @@
           </div>
         </form>
         <div class="text-secondary flex justify-center mt-6 hover:underline">
-          <a class="cursor-pointer" href="/register/"
+          <a class="cursor-pointer" href="/auth/register/"
             >Don't have an account yet?</a
           >
         </div>
       </div>
     </div>
+    <div
+      id="toast"
+      class="hidden fixed top-1 items-center bg-primary_button text-black py-3 px-6 rounded-lg shadow-lg transition-opacity duration-300 opacity-0"
+    ></div>
   </body>
 </html>

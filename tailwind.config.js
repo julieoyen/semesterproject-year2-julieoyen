@@ -3,11 +3,10 @@ export default {
   content: [
     './index.html',
     './src/**/*.{html,js,ts,jsx,tsx}',
-    './listings/**/*.{html,js,ts,jsx,tsx}',
-    './profile/index.{html,js,ts,jsx,tsx}',
-    './login/index.{html,js,ts,jsx,tsx}',
-    './register/register.{html,js,ts,jsx,tsx}',
     './src/**/**/*.{html,js,ts,jsx,tsx}',
+    './auth/**/*.{html,js,ts,jsx,tsx}',
+    './listings/**/*.{html,js,ts,jsx,tsx}',
+    '/',
   ],
   theme: {
     extend: {
@@ -21,7 +20,21 @@ export default {
         roboto: ['Roboto', 'sans-serif'],
       },
       screens: {
-        xs: '480px', // Define a custom breakpoint for extra-small screens
+        xs: '480px',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: 0, transform: 'translateY(20px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
+        },
+        fadeOut: {
+          '0%': { opacity: 1, transform: 'translateY(0)' },
+          '100%': { opacity: 0, transform: 'translateY(20px)' },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.3s ease-out',
+        fadeOut: 'fadeOut 0.3s ease-out',
       },
     },
   },

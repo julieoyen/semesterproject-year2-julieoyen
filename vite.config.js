@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   appType: 'mpa',
@@ -8,13 +8,13 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        profile: resolve(__dirname, 'profile/index.html'),
-        login: resolve(__dirname, 'login/index.html'),
-        register: resolve(__dirname, 'register/index.html'),
-        createListing: resolve(__dirname, 'listings/create/index.html'),
-        editListing: resolve(__dirname, 'listings/edit/index.html'),
-        viewListing: resolve(__dirname, 'listings/view/index.html'),
+        main: resolve(__dirname, './index.html'),
+        login: resolve(__dirname, './auth/login/index.html'),
+        register: resolve(__dirname, './auth/register/index.html'),
+        profile: resolve(__dirname, './profile/index.html'),
+        listing: resolve(__dirname, './listing/index.html'),
+        editListing: resolve(__dirname, './listing/edit/index.html'),
+        createListing: resolve(__dirname, './listing/create/index.html'),
       },
     },
   },

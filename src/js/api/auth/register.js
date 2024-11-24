@@ -12,7 +12,6 @@ export async function register({ name, email, password }) {
       body: JSON.stringify({ name, email, password }),
     });
     const responseData = await response.json();
-    console.log('server response', responseData);
     if (!response.ok) {
       if (responseData.errors?.length > 0) {
         const errorMessages = responseData.errors
