@@ -5,7 +5,10 @@ export default {
     './src/**/*.{html,js,ts,jsx,tsx}',
     './src/**/**/*.{html,js,ts,jsx,tsx}',
     './auth/**/*.{html,js,ts,jsx,tsx}',
-    './listings/**/*.{html,js,ts,jsx,tsx}',
+    './profile/**/*.{html,js,ts,jsx,tsx}',
+    './src/js/**/*.{html,js,ts,jsx,tsx}',
+    './src/js/**/**/*.{html,js,ts,jsx,tsx}',
+    './listing/**/*.{html,js,ts,jsx,tsx}',
     '/',
   ],
   theme: {

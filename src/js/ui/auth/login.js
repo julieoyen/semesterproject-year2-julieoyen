@@ -12,15 +12,15 @@ export async function onLogin(event) {
     return;
   }
   try {
-    const loginData = await login({ email, password });
-    if (loginData.error) {
-      alert(loginData.error);
+    const data = await login({ email, password });
+    if (data.error) {
+      alert(data.error);
       return;
     }
-    localStorage.setItem('token', loginData.data.accessToken);
-    localStorage.setItem('userID', loginData.data.name);
+    localStorage.setItem('token', data.data.accessToken);
+    localStorage.setItem('userID', data.data.name);
 
-    showToast(`Welcome, ${loginData.data?.name}!`);
+    showToast(`Welcome, ${data.data?.name}!`);
 
     setTimeout(() => {
       window.location.href = '/';
