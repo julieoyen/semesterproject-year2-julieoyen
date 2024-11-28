@@ -1,23 +1,29 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
+  darkMode: 'class',
   content: [
-    './index.html',
-    './src/**/*.{html,js,ts,jsx,tsx}',
-    './src/**/**/*.{html,js,ts,jsx,tsx}',
-    './auth/**/*.{html,js,ts,jsx,tsx}',
-    './profile/**/*.{html,js,ts,jsx,tsx}',
-    './src/js/**/*.{html,js,ts,jsx,tsx}',
-    './src/js/**/**/*.{html,js,ts,jsx,tsx}',
-    './listing/**/*.{html,js,ts,jsx,tsx}',
-    '/',
+      './index.html',
+      './src/**/*.{html,js,ts,jsx,tsx}', 
+      './auth/**/*.{html,js,ts,jsx,tsx}', 
+      './profile/**/*.{html,js,ts,jsx,tsx}', 
+      './listing/**/*.{html,js,ts,jsx,tsx}',
+      './src/js/components/*.{html,js,ts,jsx,tsx}',
+
   ],
   theme: {
     extend: {
       colors: {
-        primary_button: '#B7E949',
-        primary_button_hover: '#9ACF3A',
-        secondary: '#2320E8',
-        background_white: '#FCFAFA',
+        primary: '#FF7F11',
+        primary_hover: '#E6700F',
+        button: { 
+          DEFAULT: '#006c7a',
+          hover: '#008899',
+        },
+        background: {
+        light: '#F6EFDB',
+        dark: '#0A2638',
+        }
+
       },
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
