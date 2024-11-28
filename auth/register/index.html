@@ -12,20 +12,30 @@
     <title>Register</title>
   </head>
   <body
-    class="bg-secondary flex items-center justify-center min-h-screen font-roboto"
+    class="dark:bg-background-dark bg-background-light flex items-center justify-center min-h-screen font-roboto"
   >
+    <input type="checkbox" class="peer sr-only opacity-0" id="toggle" />
+
+    <label
+      id="dark-mode"
+      for="toggle"
+      class="absolute top-1 right-3 flex cursor-pointer items-center rounded-full bg-background-dark px-0.5 transition-colors h-5 w-9 before:h-4 before:w-4 sm:h-6 sm:w-11 sm:before:h-5 sm:before:w-5 before:rounded-full before:bg-white before:shadow before:transition-transform before:duration-300 peer-checked:bg-blue-600 peer-checked:before:bg-blue-100 peer-checked:before:translate-x-full peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue-600 dark:bg-blue-900 dark:peer-checked:bg-background-light dark:before:bg-gray-500 dark:peer-checked:before:bg-background-dark"
+    >
+      <span class="sr-only">Enable Dark Mode</span>
+    </label>
     <div class="p-8 max-w-md">
       <div>
         <img
-          src="/public/images/bidalong-logo.png"
+          src="/images/bidalonglogo-small.png"
           alt="Bidalong logo"
           class="w-full bg-secondary"
         />
       </div>
-      <div class="bg-white p-8 max-w-md rounded-lg">
-        <h1 class="text-2xl font-semibold mb-2">Register</h1>
-        <p class="text-gray-500 mb-6">Sign up to find unique deals!</p>
-
+      <div class="bg-white p-8 max-w-md rounded-lg shadow-lg">
+        <div class="flex flex-col justify-center text-center">
+          <h1 class="text-2xl font-semibold mb-2">Sign up</h1>
+          <p class="text-gray-500 mb-6">Register now to find unique deals!</p>
+        </div>
         <form
           id="register-form"
           name="register"
@@ -66,7 +76,7 @@
                 pattern="^[\w]+$"
                 title="Please enter a username using only letters and numbers"
                 aria-required="true"
-                class="w-full bg-gray-100 ps-10 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                class="w-full ps-10 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
             <div class="mb-4 relative">
@@ -142,9 +152,9 @@
                 <button
                   type="submit"
                   id="register-btn"
-                  class="w-full bg-primary_button text-black py-2 rounded-lg hover:bg-primary_button_hover transition duration-200"
+                  class="w-full bg-button text-white py-2 rounded-lg hover:bg-button-hover transition duration-200"
                 >
-                  Register
+                  SIGN UP
                 </button>
               </div>
             </div>
