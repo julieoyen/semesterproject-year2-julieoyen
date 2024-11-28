@@ -8,6 +8,7 @@ export default defineConfig({
     postcss: './postcss.config.js',
   },
   build: {
+    outDir: 'dist',
     target: 'esnext',
     rollupOptions: {
       input: {
@@ -20,5 +21,6 @@ export default defineConfig({
         createListing: resolve(__dirname, './listing/create/index.html'),
       },
     },
+    
   },
 });
