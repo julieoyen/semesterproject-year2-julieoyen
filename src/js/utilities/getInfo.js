@@ -19,3 +19,7 @@ export function getIDFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get('id'); // Change to 'id' if your URL is using 'id'
 }
+
+export function isLoggedIn() {
+  return !!getMyToken();
+}
