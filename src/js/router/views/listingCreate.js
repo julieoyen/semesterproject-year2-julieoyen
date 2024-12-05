@@ -1,4 +1,4 @@
-import { authGuard } from '../../utilities/authGuard';
+import { authGuard } from '../../utilities/authguard';
 import { onCreateListing } from '../../ui/listing/create';
 
 authGuard();
