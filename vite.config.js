@@ -21,6 +21,5 @@ export default defineConfig({
         createListing: resolve(__dirname, './listing/create/index.html'),
       },
     },
-    
   },
 });

@@ -9,7 +9,6 @@
     "preview": "vite preview ",
     "format": "prettier --write .",
     "check": "prettier --check ."
-    
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
