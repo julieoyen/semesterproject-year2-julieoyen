@@ -7,7 +7,7 @@ export async function createListing({
   description,
   tags = [],
   media = [],
-  endsAt,
+  endsAt = new Intl.DateTimeFormat(en - uk),
 }) {
   if (!title || title.trim() === '') {
     throw new Error('Title is required.');

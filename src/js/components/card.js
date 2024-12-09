@@ -20,10 +20,11 @@ export function renderAuctionCard(
     _count,
   } = info;
 
-  // Determine if the logged-in user owns this post
   function isOwner() {
     return isLoggedIn() && getMyName() === seller?.name;
   }
+
+  const hasEnded = new Date(endsAt) <= new Date();
 
   const card = document.createElement('div');
   card.className =
@@ -83,41 +84,48 @@ export function renderAuctionCard(
                      .join('')}
                  </div>`
               : ``
-          }
-            <p class="text-black">Created: <span class="font-medium">${created ? timeSincePosted(created) : 'N/A'}</span></p>
-            <h2 class="text-xl text-black font-bold">${title || 'Untitled Auction'}</h2>
-            <p class="text-sm text-black mb-2">${description || 'No description available.'}</p>
+          } 
+            <p class="text-sm text-black">Created: <span>${created ? timeSincePosted(created) : 'N/A'}</span></p>
+            <h1 class="lg:text-2xl text-xl  text-black font-bold">${title || 'Untitled Auction'}</h1>
+            <p class="lg:text-lg text-black mb-2">${description || 'No description available.'}</p>
           </div>
-          <div class="mt-auto text-sm text-gray-600">
+ <div class="mt-auto p-2 text-sm text-gray-600">
+          <div class="flex flex-row text-black justify-between pb-2">
             <p>Bids: <span class="font-medium">${_count?.bids || 0}</span></p>
-            <p>Current bid: <span class="font-medium">${bids[0]?.amount || '0'}</span></p>
-            <p>Bidding ends <span class="font-medium">${endsAt ? timeUntilEnds(endsAt) : 'N/A'}</span></p>
+            <p>${hasEnded ? 'Final bid' : 'Current bid'}: 
+              <span class="font-medium">$${bids[0]?.amount || '0'}</span></p>
+              </div>          
+             
+            <p class="border-2 border-primary rounded-lg mt-auto p-2 text-sm text-gray-600 ">Bidding ${hasEnded ? 'ended' : 'ends'} 
+              <span class="font-medium">${hasEnded ? timeSincePosted(endsAt) : timeUntilEnds(endsAt)}</span></p>
           </div>
           <div class="mt-4 flex justify-between">
             ${
               isOwner()
                 ? `
-                  <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                  <button class="edit-btn bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Edit
-                    <button 
+                  </button>
+                  <button 
                     class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 delete-btn" 
                     auction-listings-id="${id}">
                     Delete
                   </button>
-                  
                 `
-                : isLoggedIn()
-                  ? `<button class="bg-button text-white px-4 py-2 rounded hover:bg-button-hover">Bid Now</button>`
-                  : `<div class="grid grid-cols-2 justify-between">
-                     <div class="flex justify-center text-center items-center">
-                       <p class="text-black text-center">Want to place a bid?</p>
-                     </div>
-                     <div class="flex justify-end">
-                       <button class="bg-button text-white px-4 py-2 rounded hover:bg-button-hover">
-                         <a href="/auth/login/">Login</a>
-                       </button>
-                     </div>
-                   </div>`
+                : hasEnded
+                  ? ''
+                  : isLoggedIn()
+                    ? `<button class="bg-button text-white px-4 py-2 rounded hover:bg-button-hover">Bid Now</button>`
+                    : `<div class="grid grid-cols-2 justify-between">
+                         <div class="flex justify-center text-center items-center">
+                           <p class="text-black text-center">Want to place a bid?</p>
+                         </div>
+                         <div class="flex justify-end">
+                           <button class="bg-button text-white px-4 py-2 rounded hover:bg-button-hover">
+                             <a href="/auth/login/">Login</a>
+                           </button>
+                         </div>
+                       </div>`
             }
           </div>
         </div>
@@ -169,19 +177,25 @@ export function renderAuctionCard(
     console.error('Container element not found');
   }
 
-  // Handle delete button
+  const editButton = card.querySelector('.edit-btn');
+  if (editButton) {
+    editButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      window.location.href = `/listing/edit/?id=${id}`;
+    });
+  }
+
   const deleteButton = card.querySelector(`[auction-listings-id="${id}"]`);
-  console.log(`auction-listings-id="${id}`);
+
   if (deleteButton && isOwner()) {
     deleteButton.addEventListener('click', async () => {
       const confirmed = confirm('Are you sure you want to delete this post?');
       if (confirmed) {
         try {
-          await deleteListing(id); // API call to delete
-          card.remove(); // Remove card from DOM
+          await deleteListing(id);
+          card.remove();
           console.log(`Listing with ID ${id} deleted successfully.`);
 
-          // Dispatch the custom event
           const event = new CustomEvent('listingDeleted', { detail: { id } });
           document.dispatchEvent(event);
         } catch (error) {
