@@ -1,23 +1,21 @@
-const searchButton = document.getElementById('search-button');
-const searchField = document.getElementById('searchbar-field');
+export function initSearchBar(onSearch, allAuctions) {
+  const searchInput = document.getElementById('searchbar-field');
 
-let searchQuery = ''; // To store the search query
+  if (searchInput) {
+    searchInput.addEventListener('input', (event) => {
+      const query = event.target.value.toLowerCase();
 
-searchField.addEventListener('input', (e) => {
-  searchQuery = e.target.value.trim(); // Get the search query as user types
-
-  if (searchQuery.length > 0) {
-    loadPosts(1, searchQuery); // Start from the first page if searching
-  } else {
-    loadPosts(1); // If no search query, load all posts
+      const searchedAuctions = allAuctions.filter((auction) => {
+        return (
+          (typeof auction.title === 'string' &&
+            auction.title.toLowerCase().includes(query)) ||
+          (typeof auction.seller === 'string' &&
+            auction.seller.toLowerCase().includes(query)) ||
+          (typeof auction.description === 'string' &&
+            auction.description.toLowerCase().includes(query))
+        );
+      });
+      onSearch(searchedAuctions);
+    });
   }
-});
-
-// Close search bar when clicked outside
-if (searchField && searchButton) {
-  window.addEventListener('click', (e) => {
-    if (!searchField.contains(e.target) && !searchButton.contains(e.target)) {
-      searchField.classList.add('hidden');
-    }
-  });
 }

@@ -31,7 +31,7 @@ export function timeUntilEnds(endsAt) {
   const diff = endDate - now;
 
   if (diff <= 0) {
-    return 'Bidding ended';
+    return;
   }
 
   const seconds = Math.floor(diff / 1000);

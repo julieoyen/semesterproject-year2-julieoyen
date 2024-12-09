@@ -9,6 +9,7 @@ export async function onCreateListing(event) {
 
   try {
     const formData = extractFormData(form);
+
     validateFormData(formData);
     await submitListing(formData);
     window.alert('Listing created successfully!');
@@ -39,6 +40,9 @@ function extractFormData(form) {
 function validateFormData({ title, description, tag }) {
   if (!title || !description) {
     throw new Error('Title and description are required.');
+  }
+  if (description.length > 280) {
+    throw new Error('Description cannot exceed 280 characters.');
   }
   if (!VALID_TAGS.includes(tag)) {
     throw new Error('Please select a valid tag.');
