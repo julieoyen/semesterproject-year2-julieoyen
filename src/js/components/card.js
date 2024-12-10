@@ -2,11 +2,7 @@ import { timeSincePosted, timeUntilEnds } from '../utilities/formatDate';
 import { isLoggedIn, getMyToken, getMyName } from '../utilities/getInfo';
 import { deleteListing } from '../../js/api/listing/delete';
 
-export function renderAuctionCard(
-  info,
-  container,
-  allowedTags = ['art', 'watches', 'jewelry', 'vintage']
-) {
+export function renderAuctionCard(info, container) {
   const {
     title,
     id,
@@ -28,9 +24,8 @@ export function renderAuctionCard(
 
   const card = document.createElement('div');
   card.className =
-    'border rounded-lg shadow-lg justify-between justify-items-center overflow-hidden max-w-96 mb-5 text-left bg-white flex flex-col';
-
-  const limitedMedia = media.slice(0, 3);
+    'border rounded-lg shadow-lg justify-between justify-items-center overflow-hidden max-w-xs mb-5 text-left bg-white flex flex-col  min-w-[350px] min-h-[400px]'; // Set a minimum height
+  const limitedMedia = media.slice(0, 8);
 
   const imagesHtml = limitedMedia
     .map((image, index) => {
@@ -38,11 +33,11 @@ export function renderAuctionCard(
     <div class="slide absolute inset-0 transition-transform duration-500 ease-in-out ${
       index === 0 ? 'translate-x-0' : 'translate-x-full'
     }">
-      <img src="${image.url || '/images/default-img.png'}" 
-           alt="${image.alt || 'Auction Image'}" 
-           class="w-full h-full bg-white text-black object-cover" 
-           loading="lazy" 
-           onerror="this.onerror=null; this.src='/images/default-img.png';">
+    <img src="${image.url || '/images/default-img.png'}" 
+    alt="${image.alt || 'Auction Image'}" 
+    class="w-full h-full object-cover"  
+    loading="lazy" 
+    onerror="this.onerror=null; this.src='/images/default-img.png';">
     </div>
     `;
     })
@@ -52,8 +47,8 @@ export function renderAuctionCard(
     <div class="rounded-lg w-full mx-auto bg-white flex flex-col h-full">
       <div class="mx-4 mt-4 flex items-center text-black">
         <a href="/profile/?author=${seller?.name || ''}" class="flex items-center mb-3">
-          <img src="${seller?.avatar?.url || '/images/default-img.png'}" 
-               alt="${seller?.avatar?.alt || seller?.name || 'Seller Avatar'}" 
+          <img src="${seller?.avatar?.url || '/images/default-avatar.png'}" 
+               alt="${seller?.avatar?.alt || ''}" 
                class="w-10 h-10 rounded-full border">
           <div class="ml-3">
             <p class="text-sm font-medium">${seller?.name || 'Unknown Seller'}</p>
@@ -70,25 +65,30 @@ export function renderAuctionCard(
             &#x276E;
           </button>
         </div>
-        <div class="p-4 flex flex-col flex-grow justify-between">
+        <div class="p-4 flex flex-col justify-between">
           <div>
           ${
             tags?.length
               ? `<div class="tags-container flex flex-wrap gap-2 mb-4">
                    ${tags
-                     .filter((tag) => allowedTags.includes(tag.toLowerCase()))
                      .map(
                        (tag) =>
                          `<span class="bg-orange-300 text-black text-xs font-medium px-2 py-1 rounded">${tag}</span>`
                      )
                      .join('')}
                  </div>`
-              : ``
-          } 
+              : `<div class="tags-container flex flex-wrap gap-2 mb-4 h-8">
+                   <span class="bg-transparent text-transparent text-xs font-medium px-2 py-1 rounded">No Tags</span>
+                 </div>`
+          }
+          
+          
             <p class="text-sm text-black">Created: <span>${created ? timeSincePosted(created) : 'N/A'}</span></p>
-            <h1 class="lg:text-2xl text-xl  text-black font-bold">${title || 'Untitled Auction'}</h1>
-            <p class="lg:text-lg text-black mb-2">${description || 'No description available.'}</p>
-          </div>
+          
+            <h1 class=" lg:text-xl text-lg  text-black font-bold truncate ..."">${title || 'Untitled Auction'}</h1>
+            <p class="lg:text-md text-black mb-2  truncate ..."">${description || 'No description available.'}</p>
+            </div>
+
  <div class="mt-auto p-2 text-sm text-gray-600">
           <div class="flex flex-row text-black justify-between pb-2">
             <p>Bids: <span class="font-medium">${_count?.bids || 0}</span></p>
