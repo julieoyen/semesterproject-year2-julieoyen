@@ -6,17 +6,18 @@ import { createFilterComponent } from '../../utilities/filterTags';
 renderHeader();
 initMenu();
 
-fetchAuctions();
+fetchAuctions('_active=true', 'endsAt');
 
-// Set up filters
-createFilterComponent('filter-container', (selectedTag, isActive) => {
-  const queryParams = selectedTag
-    ? `_tag=${selectedTag}&_active=${isActive}`
-    : `_active=${isActive}`;
-  fetchAuctions(queryParams); // Fetch listings with filters
-});
+createFilterComponent(
+  'filter-container',
+  (selectedTag, isActive, sortBy = 'endsAt') => {
+    const queryParams = selectedTag
+      ? `_tag=${selectedTag}&_active=${isActive}`
+      : `_active=${isActive}`;
+    fetchAuctions(queryParams, sortBy);
+  }
+);
 
-// Listen for deletion updates
 document.addEventListener('listingDeleted', () => {
-  fetchAuctions(); // Re-fetch listings after deletion
+  fetchAuctions();
 });

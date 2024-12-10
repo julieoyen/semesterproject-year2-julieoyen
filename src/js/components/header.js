@@ -1,8 +1,7 @@
 import { initDarkMode } from '../utilities/darkMode';
-import { getMyName, getMyToken } from '../utilities/getInfo';
-import { fetchAuctions } from '../router/views/listing';
+import { getMyName, getMyToken, getMyCredit } from '../utilities/getInfo';
 
-export function renderHeader() {
+export async function renderHeader() {
   const header = document.createElement('header');
   header.className =
     'sticky top-0 z-10 border-gray-200 dark:bg-background-dark';
@@ -14,24 +13,33 @@ export function renderHeader() {
   };
   const myName = getMyName();
 
+  const loggedInUserCredit = `
+<div class="flex font-roboto font-bold text-md mx-12 hidden items-center justify-center md:block">
+<span class="px-2 flex flex-col items-center justify-center py-1 rounded-lg text-md ">YOUR CREDIT: <br> <span id="user-credits-desktop">Loading...</span></span>
+</div>`;
+
   const loggedInUserDesktop = `
 
     <div class="flex items-center">
-      <nav class="hidden text-2xl text-black dark:text-white md:block" aria-label="Main Navigation">
+    
+      <nav class="hidden text-xl text-black dark:text-white md:block" aria-label="Main Navigation">
         <ul class="flex flex-row justify-center space-x-8" role="menu">
+
+
+        <li role="none">
+        <a role="menuitem" class="hover:text-button dark:hover:text-primary" href="/listing/create/">Create Listing</a>
+      </li>
           <li role="none">
-              <a role="menuitem" id="my-profile-link"  href="/profile/?author=${myName}" class="hover:text-primary bg-background-dark rounded-full text-white dark:hover:text-primary" aria-label="View Profile">
-                <svg class="w-[31px] h-[31px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <a role="menuitem" id="my-profile-link"  href="/profile/?author=${myName}" class=" bg-background-dark rounded-full text-white dark:hover:text-primary" aria-label="View Profile">
+                <svg class="w-[31px] h-[31px] text-gray-800 dark:text-white hover:text-button dark:hover:text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                   <path fill-rule="evenodd" d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z" clip-rule="evenodd"/>
                 </svg>
               </a>
           </li>
-          <li role="none">
-            <a role="menuitem" class="hover:text-button dark:hover:text-primary" href="/listing/create/">Create Listing</a>
-          </li>
+
           <li role="none">
             <button role="menuitem" class="hover:text-button dark:hover:text-primary logout-btn" aria-label="Log out">
-              <svg class="w-[31px] h-[31px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <svg class="w-[31px] h-[31px] text-gray-800 dark:text-white hover:text-button dark:hover:text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
               </svg>
             </button>
@@ -94,14 +102,16 @@ export function renderHeader() {
         aria-controls="mobile-menu">
         <div class="absolute top-4 -mt-0.5 h-1 w-8 rounded bg-background-dark dark:bg-white transition-all duration-500 before:absolute before:h-1 before:w-8 before:-translate-x-4 before:-translate-y-3 before:rounded before:bg-background-dark before:dark:bg-white before:transition-all before:duration-500 before:content-[''] after:absolute after:h-1 after:w-8 after:-translate-x-4 after:translate-y-3 after:rounded after:bg-background-dark after:dark:bg-white after:transition-all after:duration-500 after:content-['']"></div>
       </button>
-      <div class="flex flex-col absolute">
+      <div class="flex flex-col ">
         <div
           id="mobile-menu"
           class="hidden animate-open-menu bg-background-light text-black dark:text-background-light dark:bg-background-dark text-xl"
           role="dialog"
           aria-labelledby="mobile-menu-title">
-          <nav class="absolute flex text-center mt-2 right-0 min-w-[180px] bg-white shadow-md p-2 rounded-md">
-            <ul role="menu">
+          <nav class="absolute flex flex-col text-center mt-2 right-0 min-w-[180px] bg-white shadow-md p-2 rounded-md">
+          <li role="none" aria-label="Credits" class="flex border-primary border-2 items-center p-3">
+          <span class="text-background-dark ">Your credits: <span id="user-credits-mobile">Loading...</span></span>
+        </li>
               <li role="option" aria-label="My Profile" class="cursor-pointer flex items-center p-3 hover:bg-gray-100">
                 <i class="fa-regular fa-user text-primary"></i>
                 <a id="my-profile-mobile" href="/profile/?author=${myName}" class="ml-2 text-background-dark">My Profile</a>
@@ -128,7 +138,13 @@ export function renderHeader() {
 
   header.innerHTML = `
     <div class="grid grid-flow-col items-center justify-between py-3 px-4 sm:px-10 bg-background-light dark:bg-background-dark lg:gap-y-4 gap-y-6 gap-x-4">
-      <a href="/"><img class="h-24 w-24 sm:h-auto sm:w-fill object-cover" src="/images/bidalonglogo.png" alt="Bidalong Logo" /></a>
+      <div class="flex flex-row">
+    <a href="/"><img class="h-24 w-24 sm:h-auto sm:w-fill object-cover mr-4" src="/images/bidalonglogo.png" alt="Bidalong Logo" /></a>
+
+    
+
+    </div> 
+  
       <div
       id="search-menu"
       class="relative flex items-center justify-center"
@@ -160,6 +176,10 @@ export function renderHeader() {
           class="w-full outline-none dark:text-black bg-transparent text-sm focus:ring-2"
           aria-label="Search the site" />
       </div>
+
+      ${isLoggedIn() ? loggedInUserCredit : ''}
+
+
     </div>
     
       <div>
@@ -170,4 +190,23 @@ export function renderHeader() {
 
   document.body.prepend(header);
   initDarkMode();
+
+  if (isLoggedIn()) {
+    try {
+      const credits = await getMyCredit();
+      const desktopCredits = document.getElementById('user-credits-desktop');
+      const mobileCredits = document.getElementById('user-credits-mobile');
+
+      if (desktopCredits) {
+        desktopCredits.textContent = `$` + credits;
+        desktopCredits.className =
+          'font-roboto font-bold text-lg bg-white text-button  items-center border-2 border-primary px-2 justify-center';
+      }
+      if (mobileCredits) {
+        mobileCredits.textContent = credits;
+      }
+    } catch (error) {
+      console.error('Error fetching user credits:', error);
+    }
+  }
 }

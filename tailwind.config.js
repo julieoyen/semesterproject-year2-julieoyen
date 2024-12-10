@@ -25,23 +25,10 @@ module.exports = {
       },
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
+        bebas: ['Bebas Neue', 'sans-serif'],
       },
       screens: {
         xs: '480px',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: 0, transform: 'translateY(20px)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
-        },
-        fadeOut: {
-          '0%': { opacity: 1, transform: 'translateY(0)' },
-          '100%': { opacity: 0, transform: 'translateY(20px)' },
-        },
-      },
-      animation: {
-        fadeIn: 'fadeIn 0.3s ease-out',
-        fadeOut: 'fadeOut 0.3s ease-out',
       },
     },
   },
