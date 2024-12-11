@@ -3,8 +3,7 @@ import { getMyName, getMyToken, getMyCredit } from '../utilities/getInfo';
 
 export async function renderHeader() {
   const header = document.createElement('header');
-  header.className =
-    'sticky top-0 z-10 border-gray-200 dark:bg-background-dark';
+  header.className = 'top-0 z-10 border-gray-200 dark:bg-background-dark';
 
   const isLoggedIn = () => {
     const token = getMyToken();
@@ -20,12 +19,12 @@ export async function renderHeader() {
 
   const loggedInUserDesktop = `
 
-    <div class="flex items-center">
+    <div class="flex md:mt-6 items-center">
     
       <nav class="hidden text-xl text-black dark:text-white md:block" aria-label="Main Navigation">
         <ul class="flex flex-row justify-center space-x-8" role="menu">
 
-
+        ${isLoggedIn() ? loggedInUserCredit : ''}
         <li role="none">
         <a role="menuitem" class="hover:text-button dark:hover:text-primary" href="/listing/create/">Create Listing</a>
       </li>
@@ -50,17 +49,17 @@ export async function renderHeader() {
   `;
 
   const noUserDesktop = `
-  <div class="pb-3">
+  <div>
   <input type="checkbox" class="peer sr-only opacity-0" id="toggle" />
   <label
     id="dark-mode"
     for="toggle"
-    class="absolute top-2 right-4 flex cursor-pointer items-center rounded-full bg-background-dark px-0.5 transition-colors h-5 w-9 before:h-4 before:w-4 sm:h-6 sm:w-11 sm:before:h-5 sm:before:w-5 before:rounded-full before:bg-white before:shadow before:transition-transform before:duration-300 peer-checked:bg-blue-600 peer-checked:before:bg-blue-100 peer-checked:before:translate-x-full peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue-600 dark:bg-blue-900 dark:peer-checked:bg-background-light dark:before:bg-gray-500 dark:peer-checked:before:bg-background-dark"
+    class="absolute top-2 right-4 cursor-pointer items-center rounded-full bg-background-dark px-0.5 transition-colors h-5 w-9 before:h-4 before:w-4 sm:h-6 sm:w-11 sm:before:h-5 sm:before:w-5 before:rounded-full before:bg-white before:shadow before:transition-transform before:duration-300 peer-checked:bg-blue-600 peer-checked:before:bg-blue-100 peer-checked:before:translate-x-full peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue-600 dark:bg-blue-900 dark:peer-checked:bg-background-light dark:before:bg-gray-500 dark:peer-checked:before:bg-background-dark"
     aria-label="Enable Dark Mode">
     <span class="sr-only bg-white text-black">Enable Dark Mode</span>
   </label>
 </div>
-    <div class="flex flex-row pb-3">
+    <div class="flex flex-row">
       <div class="flex">
         <button>
           <a href="/auth/login/" class="px-6 py-2 hover:text-button dark:text-white dark:hover:text-white font-medium transition-all duration-300 lg:mr-4">
@@ -177,12 +176,11 @@ export async function renderHeader() {
           aria-label="Search the site" />
       </div>
 
-      ${isLoggedIn() ? loggedInUserCredit : ''}
 
 
     </div>
-    
-      <div>
+
+      <div>  
         ${isLoggedIn() ? loggedInUser : notLoggedInUser}
       </div>
     </div>

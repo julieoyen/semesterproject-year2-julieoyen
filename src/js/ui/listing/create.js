@@ -1,7 +1,5 @@
 import { createListing } from '../../api/listing/create';
 
-const VALID_TAGS = ['art', 'watches', 'vintage', 'jewelry'];
-
 export async function onCreateListing(event) {
   event.preventDefault();
 
@@ -9,13 +7,13 @@ export async function onCreateListing(event) {
 
   try {
     const formData = extractFormData(form);
-
     validateFormData(formData);
     await submitListing(formData);
     window.alert('Listing created successfully!');
     window.location.href = '/';
   } catch (error) {
-    handleError(error);
+    console.error('Error creating listing:', error);
+    window.alert(`Error: ${error.message}`);
   }
 }
 
@@ -30,29 +28,32 @@ function extractFormData(form) {
   return {
     title: form.title.value.trim(),
     description: form.description.value.trim(),
-    tag: form['list-radio'].value.trim(),
+    tags: form.tags.value
+      .split(',')
+      .map((tag) => tag.trim().toLowerCase())
+      .filter((tag) => tag),
     media: imageUrls,
     altMedia: imageAlts,
     endsAt: form['bid-ends'].value.trim(),
   };
 }
 
-function validateFormData({ title, description, tag }) {
+function validateFormData({ title, description, media, endsAt }) {
   if (!title || !description) {
     throw new Error('Title and description are required.');
   }
-  if (description.length > 280) {
-    throw new Error('Description cannot exceed 280 characters.');
+  if (!media || media.length === 0) {
+    throw new Error('At least one image URL is required.');
   }
-  if (!VALID_TAGS.includes(tag)) {
-    throw new Error('Please select a valid tag.');
+  if (!endsAt || isNaN(Date.parse(endsAt))) {
+    throw new Error('EndsAt must be a valid ISO date.');
   }
 }
 
 async function submitListing({
   title,
   description,
-  tag,
+  tags,
   media,
   altMedia,
   endsAt,
@@ -60,16 +61,20 @@ async function submitListing({
   await createListing({
     title,
     description,
-    tags: [tag],
+    tags,
     media: media.map((url, index) => ({ url, alt: altMedia[index] })),
     endsAt,
   });
 }
 
-function handleError(error) {
-  console.error('Error creating listing:', error);
-  window.alert(error.message || 'Failed to create listing. Please try again.');
-}
+document
+  .getElementById('delete-image-url')
+  .addEventListener('click', function () {
+    const container = document.getElementById('image-url-container');
+    if (container.children.length > 0) {
+      container.removeChild(container.lastChild);
+    }
+  });
 
 document.getElementById('add-image-url').addEventListener('click', function () {
   const container = document.getElementById('image-url-container');

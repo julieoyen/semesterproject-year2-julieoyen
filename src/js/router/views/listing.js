@@ -2,9 +2,13 @@ import { renderAuctionCard } from '../../components/card';
 import { fetchAuctionsByTag } from '../../utilities/filterTags';
 import { initSearchBar } from '../../utilities/searchBar';
 
-const tags = ['jewelry', 'watches', 'art', 'vintage'];
+export async function fetchAuctions(
+  queryParams = '',
 
-export async function fetchAuctions(queryParams = '', sortBy = 'endsAt') {
+  sortBy = 'endsAt',
+
+  paginator = null
+) {
   const container = document.getElementById('auction-card-container');
 
   if (!container) {
@@ -21,28 +25,26 @@ export async function fetchAuctions(queryParams = '', sortBy = 'endsAt') {
   container.appendChild(loading);
 
   try {
-    const auctionPromises = tags.map((tag) => {
-      const urlParams = new URLSearchParams(queryParams);
-      const isActive = urlParams.get('_active') === 'true';
-      return fetchAuctionsByTag(tag, isActive);
-    });
-
-    const auctionResults = await Promise.all(auctionPromises);
-    const allAuctions = [].concat(...auctionResults);
-
-    let filteredAuctions = allAuctions;
     const urlParams = new URLSearchParams(queryParams);
+    const isActive = urlParams.get('_active') === 'true';
     const tagFilter = urlParams.get('_tag');
-    const activeFilter = urlParams.get('_active');
+    let auctionResults;
 
     if (tagFilter) {
-      filteredAuctions = filteredAuctions.filter(
-        (auction) => auction.tags && auction.tags.includes(tagFilter)
-      );
+      auctionResults = await fetchAuctionsByTag(tagFilter, isActive);
+    } else {
+      auctionResults = await fetchAuctionsByTag(null, isActive);
     }
 
-    if (activeFilter !== null) {
-      const isActive = activeFilter === 'true';
+    const allAuctions = auctionResults;
+
+    if (paginator) {
+      paginator.setTotalItems(allAuctions.length);
+    }
+
+    let filteredAuctions = allAuctions;
+
+    if (isActive !== null) {
       filteredAuctions = filteredAuctions.filter((auction) => {
         const auctionEndsAt = new Date(auction.endsAt);
         return isActive
@@ -61,15 +63,20 @@ export async function fetchAuctions(queryParams = '', sortBy = 'endsAt') {
       filteredAuctions.sort(
         (a, b) => (b.bids[0]?.amount || 0) - (a.bids[0]?.amount || 0)
       );
-    } else if (activeFilter === 'false') {
-      filteredAuctions.sort((a, b) => new Date(b.endsAt) - new Date(a.endsAt));
     }
+
+    const limit = 12;
+    const page = urlParams.get('page') ? parseInt(urlParams.get('page')) : 1;
+    const startIndex = (page - 1) * limit;
+    const paginatedAuctions = filteredAuctions.slice(
+      startIndex,
+      startIndex + limit
+    );
 
     loading.remove();
 
-    // Render the initial filtered auctions
-    if (Array.isArray(filteredAuctions) && filteredAuctions.length > 0) {
-      filteredAuctions.forEach((auction) => {
+    if (Array.isArray(paginatedAuctions) && paginatedAuctions.length > 0) {
+      paginatedAuctions.forEach((auction) => {
         renderAuctionCard(auction, container);
       });
     } else {
@@ -78,9 +85,11 @@ export async function fetchAuctions(queryParams = '', sortBy = 'endsAt') {
         '<p class="text-center text-gray-500">No auctions available.</p>';
     }
 
-    // Initialize the search bar with the allAuctions array
+    if (paginator) {
+      paginator.setTotalItems(filteredAuctions.length);
+    }
+
     initSearchBar((searchedAuctions) => {
-      // Clear previous results and render searched auctions
       container.innerHTML = '';
 
       if (searchedAuctions.length > 0) {
@@ -91,7 +100,7 @@ export async function fetchAuctions(queryParams = '', sortBy = 'endsAt') {
         container.innerHTML =
           '<p class="text-center text-gray-500">No auctions found matching your search.</p>';
       }
-    }, allAuctions); // Pass allAuctions to the search bar
+    }, allAuctions);
   } catch (error) {
     console.error('Error fetching auctions:', error);
     loading.remove();
