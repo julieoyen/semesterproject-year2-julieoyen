@@ -1,3 +1,5 @@
+import { fetchProfileData } from '../../api/profile/read';
+import { getMyName } from '../../utilities/getInfo';
 import { renderAuctionCard } from '../../components/card';
 import {
   getAllListings,
@@ -7,6 +9,86 @@ import {
   updatePaginationButtons,
 } from '../../utilities/pagination';
 import { initSearchBar } from '../../utilities/searchBar';
+
+/**
+ * Render the profile page
+ * @param {string} profileName - The name of the profile to render
+ */
+export async function renderProfilePage(profileName) {
+  const isOwner = getMyName() === profileName;
+
+  try {
+    // Fetch profile data with listings included
+    const profileResponse = await fetchProfileData(profileName, {
+      _listings: true,
+    });
+
+    if (!profileResponse || !profileResponse.data) {
+      document.body.innerHTML =
+        '<p class="text-center text-red-500">Failed to load profile. Please try again later.</p>';
+      return;
+    }
+
+    const {
+      name,
+      bio,
+      avatar,
+      credits,
+      listings,
+      wins = [],
+    } = profileResponse.data;
+
+    // Profile container
+    const profileContainer = document.querySelector('#profile-container');
+    if (!profileContainer) {
+      console.error('Profile container not found.');
+      return;
+    }
+
+    // Render profile header
+    profileContainer.innerHTML = `
+      <div class="profile-header bg-white shadow rounded-lg p-6">
+        <div class="flex items-center">
+          <img src="${avatar?.url || '/images/default-avatar.png'}" 
+               alt="${avatar?.alt || 'Avatar'}" 
+               class="w-16 h-16 rounded-full mr-4">
+          <div>
+            <h1 class="text-xl font-bold">${name}</h1>
+            <p>${bio || 'No bio available.'}</p>
+            <p class="text-sm text-gray-500">Credits: ${credits}</p>
+            <p class="text-sm text-gray-500">Wins: ${wins}</p>
+          </div>
+        </div>
+        ${
+          isOwner
+            ? `<button class="edit-profile-btn bg-blue-500 text-white px-4 py-2 rounded mt-4">Edit Profile</button>`
+            : ''
+        }
+      </div>
+    `;
+
+    // Render profile listings
+    const listingsContainer = document.querySelector('#listings-container');
+    if (listingsContainer) {
+      listingsContainer.innerHTML = '';
+      if (listings.length > 0) {
+        listings.forEach((listing) => {
+          renderAuctionCard(
+            { ...listing, seller: { name, avatar }, isOwner },
+            listingsContainer
+          );
+        });
+      } else {
+        listingsContainer.innerHTML =
+          '<p class="text-center text-gray-500">No listings available.</p>';
+      }
+    }
+  } catch (error) {
+    console.error('Error rendering profile page:', error.message);
+    document.body.innerHTML =
+      '<p class="text-center text-red-500">An error occurred while loading the profile. Please try again later.</p>';
+  }
+}
 
 /**
  * Render pagination numbers and manage page display

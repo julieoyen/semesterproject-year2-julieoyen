@@ -1,46 +1,77 @@
-import { getIDFromURL, getMyName, getMyToken } from '../../utilities/getInfo';
-import { API_AUCTION_LISTINGS, API_KEY } from '../../utilities/constants';
-import { getMyToken } from '../../utilities/getInfo';
+import { API_AUCTION_LISTINGS } from '../../utilities/constants';
 import { headers } from '../../utilities/headers';
+import { getMyToken, getIDFromURL } from '../../utilities/getInfo';
 
-const postId = getIDFromURL();
+const id = getIDFromURL();
 
-export async function submitEditForm(event) {
+const apiUrl = `${API_AUCTION_LISTINGS}/${id}`;
+const token = getMyToken();
+
+export async function updateListing(event) {
   event.preventDefault();
 
-  const token = await getMyToken();
-
-  const updatedPostData = {
-    title: document.getElementById('title').value,
-    description: document.getElementById('description').value,
-    tags: document
-      .getElementById('tags')
-      .value.split(',')
-      .map((tag) => tag.trim()),
-    media: {
-      url: document.getElementById('image').value,
-      alt: document.getElementById('imageAlt').value,
-    },
-  };
+  const payload = createPayload();
+  const requestHeaders = headers();
+  requestHeaders.append('Authorization', `Bearer ${token}`);
+  requestHeaders.append('Content-Type', 'application/json');
 
   try {
-    const response = await fetch(`${API_AUCTION_LISTINGS}/${id}`, {
+    const response = await fetch(apiUrl, {
       method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        ...headers(),
-      },
-      body: JSON.stringify(updatedPostData),
+      headers: requestHeaders,
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to update post');
+      const errorText = await response.text();
+      console.error('API Error Response:', response.status, errorText);
+      throw new Error(
+        `Error updating listing: ${response.statusText} - ${errorText}`
+      );
     }
 
-    await response.json();
-    window.location.replace(`/profile/?author=${getMyName()}`);
+    const result = await response.json();
+    window.alert('Listing updated successfully.');
+    window.location.href = history.go(-1);
+    return result;
   } catch (error) {
-    throw new Error('Error updating post: ' + error.message);
+    console.error('Failed to update listing:', error);
+    alert(`Failed to update listing: ${error.message}`);
   }
+}
+
+export function createPayload() {
+  const title = document.querySelector('#title').value.trim();
+  const description = document.querySelector('#description').value.trim();
+  const tags = document
+    .querySelector('#tags')
+    .value.split(',')
+    .map((tag) => tag.trim())
+    .filter((tag) => tag !== '');
+  const media = gatherImageInputs();
+
+  const payload = {
+    title: title || undefined,
+    description: description || undefined,
+    tags: tags.length > 0 ? tags : undefined,
+    media: media.length > 0 ? media : undefined,
+  };
+
+  return payload;
+}
+
+function gatherImageInputs() {
+  const images = [];
+  const inputGroups = document.querySelectorAll('.image-input-group');
+
+  inputGroups.forEach((group) => {
+    const url = group.querySelector('input[name="imageUrl"]').value.trim();
+    const alt = group.querySelector('input[name="imageAlt"]').value.trim();
+
+    if (url) {
+      images.push({ url, alt: alt || null });
+    }
+  });
+
+  return images;
 }

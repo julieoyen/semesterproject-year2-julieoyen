@@ -51,7 +51,7 @@ export function timeUntilEnds(endsAt) {
   if (days > 7) {
     return ` on <strong>${formattedDate}</strong>`;
   } else if (days >= 1) {
-    return `in <strong>${days} day${days > 1 ? 's' : ''}, ${remainingHours} hour${remainingHours !== 1 ? 's' : ''} and ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}</strong>`;
+    return `in <strong>${days} day${days > 1 ? 's' : ''}, ${remainingHours} hrs${remainingHours !== 1 ? 's' : ''} and ${remainingMinutes} min${remainingMinutes !== 1 ? 's' : ''}</strong>`;
   } else if (hours >= 1) {
     return `in <strong>${hours} hour${hours > 1 ? 's' : ''} and ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}</strong>`;
   } else {

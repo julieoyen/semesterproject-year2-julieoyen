@@ -1,40 +1,43 @@
 import { API_AUCTION_PROFILES } from '../../utilities/constants';
-import { headers } from '../../utilities/headers';
-import { getNameFromURL, getMyToken } from '../../utilities/getInfo';
+import { loggedInHeaders } from '../../utilities/headers';
 
-const token = await getMyToken();
+const BASE_URL = API_AUCTION_PROFILES;
 
-export async function readProfile() {
-  const username = getNameFromURL();
-  const requestHeaders = headers();
-  requestHeaders.append('Authorization', `Bearer ${token}`);
-  const fetchOptions = createFetchOptions(requestHeaders);
-  const fetchUrl = `${API_AUCTION_PROFILES}/${seller}`;
+let myHeaders;
 
-  const response = await makeGetRequest(fetchUrl, fetchOptions);
-  if (!response) {
-    return null;
+/**
+ * Get or initialize headers for requests
+ */
+async function getHeaders() {
+  if (!myHeaders) {
+    myHeaders = await loggedInHeaders();
   }
-  return response;
+  return myHeaders;
 }
 
-const createFetchOptions = (requestHeaders) => {
-  return {
-    method: 'GET',
-    headers: requestHeaders,
-    redirect: 'follow',
-  };
-};
+/**
+ * Fetch profile data by profile name
+ * @param {string} profileName - Name of the profile to fetch
+ * @param {Object} options - Query options like _listings, _wins
+ * @returns {Object|null} - Profile data or null on failure
+ */
+export async function fetchProfileData(profileName, options = {}) {
+  const params = new URLSearchParams({ ...options }).toString();
+  const endpoint = `${BASE_URL}/${profileName}?${params}`;
 
-const makeGetRequest = async (url, fetchOptions) => {
   try {
-    const response = await fetch(url, fetchOptions);
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: await getHeaders(),
+    });
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch data: ${response.statusText}`);
+      throw new Error(`Failed to fetch profile: ${response.statusText}`);
     }
-    const result = await response.json();
-    return result.data;
+
+    return await response.json();
   } catch (error) {
+    console.error('Error fetching profile data:', error.message);
     return null;
   }
-};
+}
