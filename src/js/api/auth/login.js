@@ -12,13 +12,15 @@ export async function login({ email, password }) {
       body: JSON.stringify({ email, password }),
     });
 
+    const responseData = await response.json();
+
     if (!response.ok) {
-      const errorText = `Login failed ${response.statusText} (${response.status})`;
-      alert(`Error: ${errorText}. Please try again.`);
-      throw new Error(errorText);
+      const errorMessages =
+        responseData.errors?.map((error) => error.message).join(', ') ||
+        'An unknown error occurred.';
+      throw new Error(errorMessages);
     }
 
-    const responseData = await response.json();
     return responseData;
   } catch (error) {
     return { error: error.message };

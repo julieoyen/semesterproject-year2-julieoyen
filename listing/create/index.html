@@ -78,6 +78,7 @@
             <div id="image-url-container">
               <div class="image-input-group">
                 <input
+                  id="image"
                   type="text"
                   name="imageUrl"
                   class="mt-1 block w-full text-black rounded-md border-2 border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2 text-sm sm:text-base"
@@ -85,6 +86,7 @@
                   required
                 />
                 <input
+                  id="imageAlt"
                   type="text"
                   name="imageAlt"
                   class="mt-1 block w-full text-black rounded-md border-2 border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2 text-sm sm:text-base"
@@ -96,14 +98,14 @@
             <button
               type="button"
               id="add-image-url"
-              class="mt-2 text-white bg-button py-2 px-3 rounded-lg hover:bg-button-hover"
+              class="mt-2 text-white shadow-md border-2 border-button bg-button py-2 px-3 rounded-lg hover:bg-button-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               Add another image
             </button>
             <button
               type="button"
               id="delete-image-url"
-              class="mt-2 text-white bg-button py-2 px-3 rounded-lg hover:bg-button-hover"
+              class="mt-2 py-2 px-3 shadow-md border-2 rounded-lg text-button border-button bg-transparent hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               Delete
             </button>
@@ -137,17 +139,21 @@
               class="mt-1 block w-full object-fill rounded-md border-2 text-gray-700 border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2 text-sm sm:text-base"
             />
           </div>
+          <div
+            id="toast"
+            class="hidden font-roboto font-semibold fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl bg-background-dark dark:bg-background-light text-white dark:text-background-dark py-12 px-12 rounded-lg shadow-lg transition-opacity duration-300 opacity-0"
+          ></div>
 
           <div class="flex justify-center items-center mt-4 space-x-2">
             <button
-              class="rounded-lg bg-button hover:bg-button-hover px-10 py-4 text-sm sm:text-base cursor-pointer font-semibold text-white shadow-lg transition-all duration-500 ease-in-out transform focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              class="rounded-lg bg-button border-2 border-button hover:bg-button-hover px-10 py-4 text-sm sm:text-base cursor-pointer font-semibold text-white shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               type="submit"
             >
               Post
             </button>
             <button
               onclick="history.go(-1)"
-              class="rounded-lg border-2 border-button bg-transparent px-10 py-4 text-sm sm:text-base cursor-pointer font-semibold text-button shadow-md transition-all duration-500 ease-in-out transform hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              class="rounded-lg border-2 border-button bg-transparent px-10 py-4 text-sm sm:text-base cursor-pointer font-semibold text-button shadow-md hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               type="button"
             >
               Cancel

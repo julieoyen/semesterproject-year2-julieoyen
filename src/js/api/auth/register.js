@@ -11,20 +11,19 @@ export async function register({ name, email, password }) {
       },
       body: JSON.stringify({ name, email, password }),
     });
+
     const responseData = await response.json();
+
     if (!response.ok) {
-      if (responseData.errors?.length > 0) {
-        const errorMessages = responseData.errors
-          .map((err) => err.message)
-          .join('\n');
-        alert(`Registration Failed:\n${errorMessages}`);
-      }
-      const errorText = `Register failed ${response.statusText} (${response.status})`;
-      throw new Error(errorText);
+      const errorMessages =
+        responseData.errors?.map((err) => err.message).join(', ') ||
+        'Registration failed. Please try again.';
+      return { error: errorMessages };
     }
+
     return responseData;
   } catch (error) {
     console.error('Registration Error:', error);
-    return { error: 'Invalid email or password. Please try again.' };
+    return { error: 'An unexpected error occurred. Please try again.' };
   }
 }

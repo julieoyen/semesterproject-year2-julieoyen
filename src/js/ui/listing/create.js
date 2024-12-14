@@ -1,5 +1,12 @@
 import { createListing } from '../../api/listing/create';
+import { showToast } from '../../utilities/toast';
 
+/**
+ * Handles the creation of a new listing.
+ * Extracts form data, validates it, submits it, and shows a toast on success or errors in the console on failure.
+ *
+ * @param {Event} event - The form submission event triggered by the create listing form.
+ */
 export async function onCreateListing(event) {
   event.preventDefault();
 
@@ -8,15 +15,27 @@ export async function onCreateListing(event) {
   try {
     const formData = extractFormData(form);
     validateFormData(formData);
+
     await submitListing(formData);
-    window.alert('Listing created successfully!');
-    window.location.href = '/';
+
+    showToast('Listing created successfully!');
+
+    // Redirect to the homepage after 3 seconds
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
   } catch (error) {
     console.error('Error creating listing:', error);
-    window.alert(`Error: ${error.message}`);
+    // Optionally, display an error message in a general error container if needed
   }
 }
 
+/**
+ * Extracts form data from the create listing form.
+ *
+ * @param {HTMLFormElement} form - The form element containing listing data.
+ * @returns {Object} An object containing the extracted listing data.
+ */
 function extractFormData(form) {
   const imageUrls = Array.from(
     form.querySelectorAll('input[name="imageUrl"]')
@@ -38,6 +57,12 @@ function extractFormData(form) {
   };
 }
 
+/**
+ * Validates the extracted form data.
+ *
+ * @param {Object} data - The extracted listing data.
+ * @throws Will throw an error if validation fails.
+ */
 function validateFormData({ title, description, media, endsAt }) {
   if (!title || !description) {
     throw new Error('Title and description are required.');
@@ -50,6 +75,12 @@ function validateFormData({ title, description, media, endsAt }) {
   }
 }
 
+/**
+ * Submits the validated listing data to the backend API.
+ *
+ * @param {Object} data - The listing data to submit.
+ * @returns {Promise<void>} Resolves when the listing is successfully created.
+ */
 async function submitListing({
   title,
   description,
@@ -85,7 +116,7 @@ document.getElementById('add-image-url').addEventListener('click', function () {
   newImageUrlInput.type = 'text';
   newImageUrlInput.name = 'imageUrl';
   newImageUrlInput.className =
-    'mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2 text-sm sm:text-base';
+    'mt-1 block w-full text-black rounded-md border-2 border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2 text-sm sm:text-base';
   newImageUrlInput.placeholder = 'Enter image URL';
   newImageUrlInput.required = true;
 
@@ -93,7 +124,7 @@ document.getElementById('add-image-url').addEventListener('click', function () {
   newImageAltInput.type = 'text';
   newImageAltInput.name = 'imageAlt';
   newImageAltInput.className =
-    'mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2 text-sm sm:text-base';
+    'mt-1 block w-full rounded-md border-2 border-gray-300 text-black focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2 text-sm sm:text-base';
   newImageAltInput.placeholder = 'Enter image alt text';
   newImageAltInput.required = true;
 

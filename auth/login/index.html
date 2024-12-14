@@ -12,7 +12,7 @@
     <title>Login</title>
   </head>
   <body
-    class="dark:bg-background-dark bg-background-light flex items-center justify-center min-h-screen font-roboto"
+    class="dark:bg-background-dark bg-gray-100 flex items-center justify-center min-h-screen font-roboto"
   >
     <input type="checkbox" class="peer sr-only opacity-0" id="toggle" />
 
@@ -28,7 +28,7 @@
         <img
           src="/images/bidalonglogo-small.png"
           alt="Bidalong logo"
-          class="w-full bg-background-light dark:bg-background-dark"
+          class="w-full bg-gray-100 dark:bg-background-dark"
         />
       </div>
 
@@ -44,7 +44,7 @@
           aria-labelledby="login-form"
         >
           <div class="mb-4">
-            <label class="block text-gray-700" for="email">Email</label>
+            <label class="block text-gray-700" for="email">Email</label>     
             <div class="relative mb-6">
               <div
                 class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
@@ -72,59 +72,58 @@
                 required
               />
             </div>
-
-            <div class="mb-4 relative">
-              <label class="block text-gray-700" for="password">Password</label>
-              <div class="relative mb-6">
-                <div
-                  class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-                >
-                  <svg
-                    class="w-6 h-6 text-gray-500 dark:text-gray-400"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  class="w-full ps-10 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  type="password"
-                  name="password"
-                  id="password"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                id="login-btn"
-                class="w-full bg-button text-white font-roboto py-2 rounded-lg hover:bg-button-hover transition duration-200 cursor-pointer"
+          </div>
+      
+          <div class="mb-4 relative">
+            <label class="block text-gray-700" for="password">Password</label>
+            <div class="relative mb-6">
+              <div
+                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
               >
-                LOGIN
-              </button>
+                <svg
+                  class="w-6 h-6 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"
+                  />
+                </svg>
+              </div>
+              <input
+                class="w-full ps-10 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                type="password"
+                name="password"
+                id="password"
+                required
+              />
             </div>
           </div>
+          <div id="general-error" class="text-red-600 text-md mt-4 mb-4 text-center"></div>
+      
+          <button
+            type="submit"
+            id="login-btn"
+            class="w-full bg-button text-white font-roboto py-2 rounded-lg hover:bg-button-hover transition duration-200 cursor-pointer"
+          >
+            LOGIN
+          </button>
         </form>
         <div
           class="text-dark flex justify-center mt-6 hover:underline text-background-dark"
         >
-          <a class="cursor-pointer" href="/auth/register/"
-            >Don't have an account yet?</a
-          >
+          <a class="cursor-pointer" href="/auth/register/">Don't have an account yet?</a>
         </div>
       </div>
-    </div>
+      
     <div
       id="toast"
       class="hidden font-roboto font-semibold fixed top-1 text-2xl items-center m-5 bg-background-dark dark:bg-background-light text-white dark:text-background-dark py-3 px-6 rounded-lg shadow-lg transition-opacity duration-300 opacity-0"

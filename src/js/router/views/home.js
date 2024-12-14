@@ -1,12 +1,12 @@
 import { initMenu } from '../../utilities/hamburgerMenu';
 import { renderHeader } from '../../components/header';
-import { fetchAuctions } from './listing';
+import { fetchAuctions } from '../../api/listing/read';
 import { createFilterComponent } from '../../utilities/filterTags';
 
 renderHeader();
 initMenu();
 
-fetchAuctions('_active=true', 'endsAt');
+await fetchAuctions('', 'created', 'desc');
 
 createFilterComponent(
   'filter-container',
