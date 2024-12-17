@@ -49,11 +49,11 @@ function createImageInputGroup(url = '', alt = '') {
   const inputGroup = document.createElement('div');
   inputGroup.className = 'image-input-group';
   inputGroup.innerHTML = `
-    <div class="image-preview mt-4">
+    <div class="image-preview mt-4 flex justify-center">
       <img
         src="${url}"
         alt="${alt}"
-        class="w-full max-h-64 object-contain mb-2"
+        class="w-full max-h-64 max-w-64 flex object-contain mb-2"
         "
       />
     </div>

@@ -39,6 +39,7 @@ export async function onLogin(event) {
 
     localStorage.setItem('token', data.data.accessToken);
     localStorage.setItem('userID', data.data.name);
+    localStorage.setItem('userAvatar', JSON.stringify(data.data.avatar));
 
     showToast(`Welcome back, ${data.data?.name}!`);
 

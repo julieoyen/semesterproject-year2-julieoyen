@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" class="sm:scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="On this page you will find a single listing of your choice"
+    />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
+    <title>Single Listing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/94f8d6093f.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body
+    class="bg-gray-100 text-black dark:text-white dark:bg-background-dark min-h-screen"
+  >
+    <header id="header-container"></header>
+    <main>
+      <section class="flex justify-center" id="listings-container"></section>
+    </main>
+    <div
+      id="bid-modal"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+    >
+      <div class="bg-white rounded-lg p-6 w-full max-w-md relative">
+        <button
+          id="close-modal-btn"
+          class="absolute top-2 right-2 text-gray-500 hover:text-black"
+        >
+          ✖
+        </button>
+        <h2 class="text-xl text-black font-bold mb-4">Place Your Bid</h2>
+        <form id="bid-form">
+          <input
+            id="bid-amount"
+            type="number"
+            placeholder="Enter your bid amount"
+            class="border rounded text-black w-full p-2 mb-4"
+            required
+          />
+          <p id="bid-feedback" class="text-red-500 hidden"></p>
+          <button
+            id="submit-bid-btn"
+            type="button"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
+          >
+            Submit Bid
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <footer class="text-center py-4 text-gray-600">
+      &copy; 2024 Auction App. All rights reserved.
+    </footer>
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 import { API_AUCTION_LISTINGS } from '../../utilities/constants';
 import { headers } from '../../utilities/headers';
 import { getMyToken, getIDFromURL } from '../../utilities/getInfo';
+import { showToast } from '../../utilities/toast';
 
 const id = getIDFromURL();
 
@@ -31,8 +32,10 @@ export async function updateListing(event) {
     }
 
     const result = await response.json();
-    window.alert('Listing updated successfully.');
-    window.location.href = history.go(-1);
+    showToast('Listing updated successfully!');
+    setTimeout(() => {
+      window.location.href = history.go(-1);
+    }, 3000);
     return result;
   } catch (error) {
     console.error('Failed to update listing:', error);

@@ -37,7 +37,7 @@ export async function createListing({
     })),
     endsAt: new Date(endsAt).toISOString(),
   };
-
+  console.log(payload);
   try {
     const response = await fetch(apiUrl, {
       method: 'POST',

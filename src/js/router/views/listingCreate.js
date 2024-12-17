@@ -1,4 +1,4 @@
-import { onCreateListing } from '../../ui/listing/create';
+import { onCreateListing } from '../../ui/listings/create';
 import { authGuard } from '../../utilities/authguard';
 import { initDarkMode } from '../../utilities/darkMode';
 

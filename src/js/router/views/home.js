@@ -1,23 +1,19 @@
 import { initMenu } from '../../utilities/hamburgerMenu';
 import { renderHeader } from '../../components/header';
-import { fetchAuctions } from '../../api/listing/read';
 import { createFilterComponent } from '../../utilities/filterTags';
+import { initSearchBar } from '../../utilities/searchBar';
+import { fetchAndRenderAuctions } from '../../utilities/filterTags';
 
-renderHeader();
-initMenu();
+// Initialize components
+renderHeader(); // Render the header
+initMenu(); // Initialize the menu
+createFilterComponent('filter-container'); // Initialize filters (ensure container exists)
+initSearchBar(); // Initialize search bar
 
-await fetchAuctions('', 'created', 'desc');
+// Load the default auctions
+fetchAndRenderAuctions(1); // Fetch and render the first page
 
-createFilterComponent(
-  'filter-container',
-  (selectedTag, isActive, sortBy = 'endsAt') => {
-    const queryParams = selectedTag
-      ? `_tag=${selectedTag}&_active=${isActive}`
-      : `_active=${isActive}`;
-    fetchAuctions(queryParams, sortBy);
-  }
-);
-
+// Listen for listing deletion events
 document.addEventListener('listingDeleted', () => {
-  fetchAuctions();
+  fetchAndRenderAuctions(1); // Reload auctions after a listing is deleted
 });
