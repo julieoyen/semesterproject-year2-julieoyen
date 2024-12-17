@@ -2,7 +2,6 @@ import { API_AUCTION_PROFILES } from '../../utilities/constants';
 import { loggedInHeaders } from '../../utilities/headers';
 
 const BASE_URL = API_AUCTION_PROFILES;
-
 let myHeaders;
 
 /**
@@ -16,12 +15,9 @@ async function getHeaders() {
 }
 
 /**
- * Fetch profile data by profile name
- * @param {string} profileName - Name of the profile to fetch
- * @param {Object} options - Query options like _listings, _wins
- * @returns {Object|null} - Profile data or null on failure
+ * Fetch profile data with optional query parameters
  */
-export async function fetchProfileData(profileName, options = {}) {
+async function fetchProfileData(profileName, options = {}) {
   const params = new URLSearchParams({ ...options }).toString();
   const endpoint = `${BASE_URL}/${profileName}?${params}`;
 
@@ -38,6 +34,30 @@ export async function fetchProfileData(profileName, options = {}) {
     return await response.json();
   } catch (error) {
     console.error('Error fetching profile data:', error.message);
+    return null;
+  }
+}
+
+export async function fetchAllProfileData(profileName) {
+  try {
+    const [profileResponse, bidsResponse] = await Promise.all([
+      fetchProfileData(profileName, { _listings: true, _wins: true }),
+      fetch(`${BASE_URL}/${profileName}/bids?_listings=true`, {
+        headers: await getHeaders(),
+      }),
+    ]);
+
+    const profile = profileResponse?.data || {};
+    const bidsData = await bidsResponse.json();
+
+    return {
+      profile,
+      bids: bidsData?.data || [],
+      listings: profile.listings || [],
+      wins: profile.wins || [],
+    };
+  } catch (error) {
+    console.error('Error fetching all profile data:', error.message);
     return null;
   }
 }

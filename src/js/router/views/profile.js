@@ -1,18 +1,31 @@
+import { fetchAllProfileData } from '../../api/profile/read';
 import { renderProfilePage } from '../../ui/profile/read';
 import { getNameFromURL } from '../../utilities/getInfo';
-import { initMenu } from '../../utilities/hamburgerMenu';
 import { renderHeader } from '../../components/header';
 
 renderHeader();
-initMenu();
 
 const profileName = getNameFromURL();
-console.log('Extracted Profile Name:', profileName);
 
 if (profileName) {
-  renderProfilePage(profileName);
+  loadProfile(profileName);
 } else {
   console.error('Invalid Profile URL');
   document.body.innerHTML =
-    '<p class="text-center text-red-500">Invalid profile URL. Please check the link and try again.</p>';
+    '<p class="text-center text-red-500">Invalid profile URL.</p>';
+}
+
+async function loadProfile(profileName) {
+  try {
+    const profileData = await fetchAllProfileData(profileName);
+
+    if (profileData) {
+      const { profile, listings, wins, bids } = profileData;
+      renderProfilePage(profile, listings, wins, bids);
+    } else {
+      throw new Error('Failed to fetch profile data.');
+    }
+  } catch (error) {
+    console.error('Error loading profile page:', error.message);
+  }
 }

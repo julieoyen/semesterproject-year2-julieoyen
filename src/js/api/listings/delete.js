@@ -6,14 +6,12 @@ export async function deleteListing(id) {
   const API_URL = `${API_AUCTION_LISTINGS}/${id}`;
   const token = getMyToken();
 
-  // Ask for user confirmation
   const confirmed = confirm('Are you sure you want to delete this post?');
   if (!confirmed) {
     return;
   }
 
   try {
-    // Get base headers and add custom ones
     const baseHeaders = headers();
     baseHeaders.append('Authorization', `Bearer ${token}`);
     baseHeaders.append('Content-Type', 'application/json');
@@ -24,12 +22,10 @@ export async function deleteListing(id) {
     });
 
     if (response.status === 204) {
-      console.log('Listing deleted successfully');
       alert('Listing has been deleted successfully.');
       return;
     }
 
-    // Handle non-204 response
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Error response from API:', errorData);

@@ -6,7 +6,7 @@ module.exports = {
     './src/**/*.{html,js,ts,jsx,tsx}',
     './auth/**/*.{html,js,ts,jsx,tsx}',
     './profile/**/*.{html,js,ts,jsx,tsx}',
-    './listing/**/*.{html,js,ts,jsx,tsx}',
+    './listings/**/*.{html,js,ts,jsx,tsx}',
     './src/js/components/*.{html,js,ts,jsx,tsx}',
   ],
   theme: {
@@ -19,7 +19,7 @@ module.exports = {
           hover: '#008899',
         },
         background: {
-          light: '#F6EFDB',
+          light: '#F3F4F6',
           dark: '#0A2638',
         },
       },
@@ -28,7 +28,10 @@ module.exports = {
         bebas: ['Bebas Neue', 'sans-serif'],
       },
       screens: {
-        xs: '480px',
+        xs: '640px',
+        sm: '768px',
+        md: '1024px',
+        lg: '1280px',
       },
     },
   },

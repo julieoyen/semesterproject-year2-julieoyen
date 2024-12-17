@@ -1,274 +1,183 @@
-import { fetchProfileData } from '../../api/profile/read';
 import { renderAuctionCard } from '../../components/card';
-import { getMyName } from '../../utilities/getInfo';
+import { setupModalHandlers, closeModal } from '../../components/modal';
 import { updateProfile } from '../../api/profile/update';
-import {
-  setupModalHandlers,
-  closeModal,
-  openModal,
-} from '../../components/modal';
-
-import { initMenu } from '../../utilities/hamburgerMenu';
-
-initMenu();
+import { getMyName } from '../../utilities/getInfo';
 
 /**
- * Render the profile page
- * @param {string} profileName - The name of the profile to render
+ * Renders the profile page with profile data, listings, wins, and bids.
+ * @param {Object} profile - Profile details.
+ * @param {Array} listings - Listings created by the user.
+ * @param {Array} wins - Listings won by the user.
+ * @param {Array} bids - Bids made by the user.
  */
-export async function renderProfilePage(profileName) {
-  const isOwner = getMyName() === profileName;
+export function renderProfilePage(profile, listings, wins, bids) {
+  const { name, avatar, banner, bio } = profile;
 
-  try {
-    const profileResponse = await fetchProfileData(profileName, {
-      _listings: true,
-    });
+  const isOwner = getMyName() === name;
 
-    if (!profileResponse || !profileResponse.data) {
-      document.body.innerHTML =
-        '<p class="text-center text-red-500">Failed to load profile. Please try again later.</p>';
-      return;
-    }
+  const profileContainer = document.getElementById('profile-container');
 
-    const {
-      name,
-      bio,
-      avatar,
-      banner,
-      credits,
-      listings = [],
-    } = profileResponse.data;
-
-    let winsCount = 0;
-    let bidsCount = 0;
-
-    // Fetch wins and bids if the user is the owner
-    if (isOwner) {
-      winsCount = (await fetchProfileWins(profileName))?.length || 0;
-      bidsCount = (await fetchProfileBids(profileName))?.length || 0;
-    }
-
-    const profileContainer = document.querySelector('#profile-container');
-    if (!profileContainer) {
-      console.error('Profile container not found.');
-      return;
-    }
-
-    // Render Profile Header and Modals
-    profileContainer.innerHTML = `
-      <div class="profile-header grid grid-cols-1 align-middle gap-y-4 gap-x-4 bg-white p-11 relative">
-        ${
-          isOwner
-            ? `<button 
-                 class="edit-banner-btn absolute top-2 right-2 bg-button hover:bg-button-hover text-white text-sm px-2 py-1 rounded-full shadow-md"
-                 aria-label="Edit Banner">
-                 ✏️
-               </button>`
-            : ''
-        }
-        <div class="flex flex-col items-center justify-center relative">
-          <div class="relative">
-            <img src="${avatar?.url || '/images/default-avatar.png'}" 
-                 alt="${avatar?.alt || 'Avatar'}" 
-                 class="w-52 h-52 rounded-full">
-          </div>          
-          <div class="">
-          <div class="bg-white p-4 shadow-lg rounded-lg mt-2">
-
-          <div class="flex align-middle justify-center border-b mb-4 border-gray-200 ">
-            <h1 class="text-2xl text-black font-bold ">${name}</h1>
-          </div>
-
-          <p id="bio-text" class="text-sm text-gray-500 mt-4">${bio || 'No bio available.'}</p>
-          </div>
-          ${
-            isOwner
-              ? `
-              <div class="flex mt-4 text-sm gap-2 text-gray-700">
-                <button class="bg-button text-white px-4 py-2 rounded hover:bg-button-hover">Listings: ${listings.length}</button>
-                <button class="bg-button text-white px-4 py-2 rounded hover:bg-button-hover">Wins: ${winsCount}</button>
-                <button class="bg-button text-white px-4 py-2 rounded hover:bg-button-hover">Bids: ${bidsCount}</button>
-
-              </div>
-              `
-              : ''
-          }
-        </div>
+  // Render Profile Header with Totals
+  profileContainer.innerHTML = `
+    <div class="profile-header relative bg-gray-200 min-h-[300px] flex flex-col items-center justify-center"
+         style="background: url('${banner?.url || '/images/default-banner.jpg'}') center/cover no-repeat;">
+      ${
+        isOwner
+          ? `<button 
+               class="edit-banner-btn absolute top-2 right-2 bg-button hover:bg-button-hover text-white px-4 py-1 rounded-full shadow-md"
+               aria-label="Edit Profile">
+               ✏️ Edit
+             </button>`
+          : ''
+      }
+      <div class="relative mt-8">
+        <img src="${avatar?.url || '/images/default-avatar.png'}" 
+             alt="${avatar?.alt || 'Avatar'}" 
+             class="w-32 h-32 object-cover rounded-full border-4 border-white shadow-lg">
       </div>
+      <h1 class="text-3xl text-white font-bold mt-4">${name}</h1>
+      <p class="text-white text-sm mt-2">${bio || 'No bio available.'}</p>
+      ${
+        isOwner
+          ? `
+        <div class="flex mt-4 text-sm gap-4 text-gray-700">
+          <button class="bg-button text-white px-4 py-2 rounded">Listings: ${listings.length}</button>
+          <button class="bg-button text-white px-4 py-2 rounded">Wins: ${wins.length}</button>
+          <button class="bg-button text-white px-4 py-2 rounded">Bids: ${bids.length}</button>
+        </div>`
+          : ''
+      }
+    </div>
 
-      <!-- Banner Modal -->
-<div id="banner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
-  <div class="bg-white rounded-lg p-6 w-96 shadow-lg relative">
-    <button id="close-banner-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✖</button>
-    <h2 class="text-xl text-black font-bold mb-4">Edit Profile</h2>
-    <form id="edit-banner-form">
-      <!-- Avatar URL -->
-      <label for="avatar-url" class="block text-sm font-medium text-gray-700">Avatar URL</label>
-      <input type="url" id="avatar-url" name="avatar-url" placeholder="Enter avatar URL" class="mt-1 p-2 border text-black border-gray-300 rounded w-full">
+    <!-- Modal -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white text-black p-6 rounded-lg shadow-lg w-full max-w-md relative">
+        <button id="close-edit-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✖</button>
+        <h2 class="text-xl font-semibold mb-4">Edit Profile</h2>
+        <form id="edit-form">
+          <label for="avatar-url" class="block text-sm font-medium text-gray-700">Avatar URL</label>
+          <input type="url" id="avatar-url" placeholder="Enter avatar URL" class="w-full mt-1 p-2 border rounded">
 
-      <!-- Banner URL -->
-      <label for="banner-url" class="block text-sm font-medium text-gray-700 mt-4">Banner URL</label>
-      <input type="url" id="banner-url" name="banner-url" placeholder="Enter banner URL" class="mt-1 p-2 border text-black border-gray-300 rounded w-full">
+          <label for="banner-url" class="block text-sm font-medium text-gray-700 mt-4">Banner URL</label>
+          <input type="url" id="banner-url" placeholder="Enter banner URL" class="w-full mt-1 p-2 border rounded">
 
-      <!-- Bio -->
-      <label for="bio-textarea" class="block text-sm font-medium text-gray-700 mt-4">Bio</label>
-      <textarea id="bio-textarea" name="bio-textarea" placeholder="Enter bio" class="mt-1 p-2 border text-black border-gray-300 rounded w-full" rows="4"></textarea>
-
-      <div class="mt-4 flex justify-end">
-        <button type="button" id="cancel-banner-button" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
-        <button type="submit" class="bg-button hover:bg-button-hover text-white px-4 py-2 rounded">Save</button>
+          <button type="submit" class="mt-4 bg-button text-white px-4 py-2 rounded hover:bg-button-hover">Save</button>
+        </form>
       </div>
-    </form>
-  </div>
-</div>
+    </div>
+    
+    <!-- Sections -->
+    <div id="listings-container" class="mt-8"></div>
+    <div id="wins-container" class="mt-8"></div>
+    <div id="bids-container" class="mt-8"></div>
+  `;
 
-    `;
-
+  // Initialize Modal Handlers Only if the User Owns the Profile
+  if (isOwner) {
     setupModalHandlers(
       {
-        modalId: 'banner-modal', // Or 'avatar-modal'
-        triggerClass: '.edit-banner-btn', // Or '.edit-avatar-btn'
-        closeId: 'close-banner-modal', // Or 'close-avatar-modal'
-        cancelId: 'cancel-banner-button', // Or 'cancel-avatar-button'
-        formId: 'edit-banner-form', // Or 'edit-avatar-form'
+        modalId: 'edit-modal',
+        triggerClass: '.edit-banner-btn',
+        closeId: 'close-edit-modal',
+        formId: 'edit-form',
       },
       (modal, form) => {
-        const bioText = document.getElementById('bio-text')?.textContent || '';
-        const avatarUrl =
-          document.querySelector('.profile-header img')?.src || '';
-        const bannerStyle =
-          document.querySelector('.profile-header').style.backgroundImage;
-        const bannerUrl = bannerStyle?.slice(5, -2) || '';
-
-        // Dynamically pre-fill based on the modal
-        if (modal.id === 'banner-modal') {
-          form.querySelector('#banner-url').value = bannerUrl;
-          form.querySelector('#bio-textarea').value = bioText;
-          form.querySelector('#avatar-url').value = avatarUrl;
-        } else if (modal.id === 'avatar-modal') {
-          form.querySelector('#avatar-url').value = avatarUrl;
-          form.querySelector('#bio-textarea').value = bioText;
-        }
+        // Pre-fill form with existing avatar and banner data
+        form.querySelector('#avatar-url').value = avatar?.url || '';
+        form.querySelector('#banner-url').value = banner?.url || '';
       },
       async (formData, modal) => {
         try {
-          const avatarUrl = formData.get('avatar-url') || '';
-          const bannerUrl = formData.get('banner-url') || '';
-          const bioText = formData.get('bio-textarea') || '';
+          // Retrieve and log the new values for debugging
+          const newAvatarUrl = formData.get('avatar-url')?.trim();
+          const newBannerUrl = formData.get('banner-url')?.trim();
 
-          console.log('Parsed FormData:', { avatarUrl, bannerUrl, bioText });
+          console.log('New Avatar URL:', newAvatarUrl); // Debug
+          console.log('New Banner URL:', newBannerUrl); // Debug
 
-          // Call `updateProfile` dynamically based on modal
-          if (modal.id === 'banner-modal') {
-            await updateProfile(bioText, {
-              avatar: avatarUrl,
-              banner: bannerUrl,
-            });
-          } else if (modal.id === 'avatar-modal') {
-            await updateProfile(bioText, { avatar: avatarUrl });
+          // Build the payload dynamically with valid inputs
+          const payload = {};
+          if (newAvatarUrl && newAvatarUrl !== avatar?.url) {
+            payload.avatar = { url: newAvatarUrl };
+          }
+          if (newBannerUrl && newBannerUrl !== banner?.url) {
+            payload.banner = { url: newBannerUrl };
           }
 
-          // Update the UI
-          const profileHeader = document.querySelector('.profile-header');
-          const avatarImg = profileHeader.querySelector('img');
+          console.log('Payload to Update:', payload); // Debug
 
-          if (modal.id === 'banner-modal' || modal.id === 'avatar-modal') {
-            avatarImg.src = avatarUrl;
-            profileHeader.style.backgroundImage = `url(${bannerUrl})`;
-            profileHeader.style.backgroundSize = 'cover';
-            profileHeader.style.backgroundPosition = 'center';
-            document.getElementById('bio-text').textContent = bioText;
+          // Check if payload is still empty
+          if (Object.keys(payload).length === 0) {
+            console.warn('No updates provided. Exiting...');
+            closeModal(modal);
+            return;
           }
 
+          // Call the updateProfile function with the payload
+          await updateProfile(payload);
+
+          // Close modal and refresh the page to show changes
           closeModal(modal);
-          renderProfilePage(getMyName());
+          location.reload();
         } catch (error) {
           console.error('Failed to update profile:', error.message);
+          alert(
+            'An error occurred while updating your profile. Please try again.'
+          );
         }
       }
     );
-
-    // Apply Banner Background
-    const bannerImage = document.querySelector('.profile-header');
-    if (bannerImage && banner?.url) {
-      bannerImage.style.backgroundImage = `url(${banner.url})`;
-      bannerImage.style.backgroundSize = 'cover';
-      bannerImage.style.backgroundPosition = 'center';
-    }
-
-    // Render Listings
-    await renderSection(
-      'Listings',
-      listings.map((listing) => ({
-        ...listing,
-        seller: { name, avatar }, // Add seller info for cards
-      })),
-      '#listings-container',
-      isOwner
-    );
-  } catch (error) {
-    console.error('Error rendering profile page:', error.message);
-    document.body.innerHTML =
-      '<p class="text-center text-red-500">An error occurred while loading the profile. Please try again later.</p>';
   }
+
+  // Render Sections
+  renderSection(
+    'Your Listings',
+    listings,
+    'listings-container',
+    'No listings available.'
+  );
+  renderSection('Listings You Won', wins, 'wins-container', 'No wins yet.');
+  renderSection(
+    'Your Bids',
+    bids.map((bid) => bid.listing),
+    'bids-container',
+    'No active bids.'
+  );
 }
 
-async function fetchProfileWins(profileName) {
-  try {
-    const response = await fetch(`/auction/profilee/${profileName}/wins`);
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.warn(`No wins found for profile: ${profileName}`);
-        return [];
-      }
-      throw new Error(`Failed to fetch wins: ${response.statusText}`);
-    }
-    const result = await response.json();
-    return result.data || [];
-  } catch (error) {
-    console.error('Error fetching wins:', error.message);
-    return [];
-  }
-}
+/**
+ * Renders a section of auction cards
+ */
+function renderSection(title, items, containerId, emptyMessage) {
+  const section = document.createElement('section');
+  section.className = 'my-6';
+  section.innerHTML = `
+    <h3 class="text-2xl font-semibold mb-3 text-center">${title}</h3>
+    <div id="${containerId}" class="flex flex-wrap gap-4 justify-center"></div>
+  `;
+  document.getElementById(containerId).replaceWith(section);
 
-async function fetchProfileBids(profileName) {
-  try {
-    const response = await fetch(`/auction/profiles/${profileName}/bids`);
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.warn(`No bids found for profile: ${profileName}`);
-        return []; // Treat 404 as no bids
-      }
-      throw new Error(`Failed to fetch bids: ${response.statusText}`);
-    }
-    const result = await response.json();
-    return result.data || [];
-  } catch (error) {
-    console.error('Error fetching bids:', error.message);
-    return [];
+  const container = document.getElementById(containerId);
+
+  if (items && items.length > 0) {
+    items.forEach((item) => {
+      const enrichedItem = {
+        ...item,
+        seller: item.seller || { name: 'Unknown Seller' },
+        _count: item._count || { bids: 0 },
+        bids: item.bids || [{ amount: 0 }],
+      };
+      renderAuctionCard(enrichedItem, container);
+    });
+  } else {
+    container.innerHTML = `<p class="text-gray-500">${emptyMessage}</p>`;
   }
 }
 
 /**
- * Render a section (listings, wins, or bids)
- * @param {string} title - The section title
- * @param {Array} items - The items to render
- * @param {string} containerSelector - The container selector
- * @param {boolean} isOwner - Whether the user is the owner
+ * Checks if the logged-in user is the profile owner.
  */
-async function renderSection(title, items, containerSelector, isOwner) {
-  const container = document.querySelector(containerSelector);
-  if (!container) {
-    console.error(`Container for ${title} not found.`);
-    return;
-  }
-
-  container.innerHTML = `<h2 class="text-lg font-bold">${title}</h2>`;
-  if (items.length > 0) {
-    items.forEach((item) => {
-      renderAuctionCard(item, container);
-    });
-  } else {
-    container.innerHTML += `<p class="text-center text-gray-500">No ${title.toLowerCase()} available.</p>`;
-  }
+function isOwner(profileName) {
+  const loggedInUser = getMyName(); // Fetches logged-in username
+  return loggedInUser && loggedInUser === profileName;
 }

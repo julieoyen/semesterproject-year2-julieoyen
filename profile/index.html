@@ -1,82 +1,118 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="sm:scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="/src/app.js"></script>
+    <meta name="description" content="Profile page on Bidalong" />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
+    <title>Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
-    <title>Profile</title>
+    <script
+      src="https://kit.fontawesome.com/94f8d6093f.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
-  <body
-    class="min-h-screen bg-gray-100 dark:bg-background-dark dark:text-white"
-  >
+  <body class="bg-gray-100 dark:bg-background-dark dark:text-white">
     <div id="profile-container"></div>
 
     <div
       id="listings-container"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-3 place-items-center"
+      class="grid grid-cols-1 bg-gray-100 dark:bg-background-dark sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-10 place-items-center"
     ></div>
     <div id="wins-container" class="mt-6"></div>
     <div id="bids-container" class="mt-6"></div>
-    <div class="flex justify-center">
-      <div id="pagination-container" class="flex items-center gap-8">
-        <button
-          class="rounded-md border border-slate-300 bg-button hover:bg-button-hover dark:text-black dark:bg-white dark:hover:bg-primary p-2.5 text-center font-bold text-sm transition-all shadow-sm hover:shadow-lg text-white hover:text-white hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-          aria-label="Pagination button - previous"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-4 h-4"
-            id="prev-button"
-            aria-label="previous"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
+    <div
+      id="toast"
+      class="hidden font-roboto font-semibold fixed top-1 text-2xl items-center m-5 bg-background-dark dark:bg-background-light text-white dark:text-background-dark py-3 px-8 mx-8 rounded-lg shadow-lg transition-opacity duration-300 opacity-0"
+    ></div>
+    <!-- Footer -->
+    <footer class="bg-background-dark text-white py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-wrap justify-between">
+          <!-- Navigation Links -->
+          <div class="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
+            <h2 class="text-lg font-bold mb-4">Navigation</h2>
+            <ul>
+              <li class="mb-2"><a href="#" class="hover:underline">Home</a></li>
+              <li class="mb-2">
+                <a href="#" class="hover:underline">Auctions</a>
+              </li>
+              <li class="mb-2">
+                <a href="#" class="hover:underline">About Us</a>
+              </li>
+              <li class="mb-2">
+                <a href="#" class="hover:underline">Contact</a>
+              </li>
+              <li class="mb-2"><a href="#" class="hover:underline">FAQ</a></li>
+            </ul>
+          </div>
 
-        <p class="text-black dark:text-white">
-          Page
-          <strong class="text-black dark:text-white">1</strong> of&nbsp;<strong
-            class="text-black dark:text-white"
-            >10</strong
-          >
-        </p>
+          <!-- Contact Information -->
+          <div class="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
+            <h2 class="text-lg font-bold mb-4">Contact Us</h2>
+            <p class="mb-2">
+              <i class="fas fa-map-marker-alt mr-2"></i>1234 Noroff City, 0458
+              Oslo
+            </p>
+            <p class="mb-2">
+              <i class="fas fa-phone-alt mr-2"></i>(123) 456-7890
+            </p>
+            <p class="mb-2">
+              <i class="fas fa-envelope mr-2"></i>info@auctionpage.com
+            </p>
+          </div>
 
-        <button
-          class="rounded-md border border-slate-300 bg-button hover:bg:button-hover hover:bg-button-hover dark:text-black dark:bg-white dark:hover:bg-primary p-2.5 text-center font-bold text-sm transition-all shadow-sm hover:shadow-lg text-white hover:text-white hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-          type="button"
-          aria-label="Pagination button - next"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            aria-label="next"
-            class="w-4 h-4"
-            id="next-button"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
+          <!-- Social Media Links -->
+          <div class="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
+            <h2 class="text-lg font-bold mb-4">Follow Us</h2>
+            <div class="flex space-x-4">
+              <a href="#" class="text-white hover:text-gray-400"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="text-white hover:text-gray-400"
+                ><i class="fab fa-twitter"></i
+              ></a>
+              <a href="#" class="text-white hover:text-gray-400"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="text-white hover:text-gray-400"
+                ><i class="fab fa-linkedin-in"></i
+              ></a>
+            </div>
+          </div>
+
+          <!-- Newsletter Subscription -->
+          <div class="w-full sm:w-1/2 md:w-1/4">
+            <h2 class="text-lg font-bold mb-4">Newsletter</h2>
+            <form action="#" method="POST">
+              <div class="flex flex-col">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Your email"
+                  class="mb-2 p-2 rounded text-gray-800"
+                />
+                <button
+                  type="submit"
+                  class="bg-button hover:bg-button-hover text-white font-bold py-2 px-4 rounded"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="mt-8 border-t border-gray-700 pt-4 text-center">
+          <p>&copy; 2023 Auction Page. All rights reserved.</p>
+        </div>
       </div>
-    </div>
-    <footer>all rights reserved</footer>
+    </footer>
+    <script type="module" src="/src/app.js"></script>
   </body>
 </html>

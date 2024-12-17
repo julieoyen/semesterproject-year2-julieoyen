@@ -1,4 +1,4 @@
-import { createListing } from '../../api/listing/create';
+import { createListing } from '../../api/listings/create';
 import { showToast } from '../../utilities/toast';
 
 /**
@@ -36,7 +36,7 @@ export async function onCreateListing(event) {
  * @param {HTMLFormElement} form - The form element containing listing data.
  * @returns {Object} An object containing the extracted listing data.
  */
-function extractFormData(form) {
+export function extractFormData(form) {
   const imageUrls = Array.from(
     form.querySelectorAll('input[name="imageUrl"]')
   ).map((input) => input.value.trim());
@@ -63,7 +63,7 @@ function extractFormData(form) {
  * @param {Object} data - The extracted listing data.
  * @throws Will throw an error if validation fails.
  */
-function validateFormData({ title, description, media, endsAt }) {
+export function validateFormData({ title, description, media, endsAt }) {
   if (!title || !description) {
     throw new Error('Title and description are required.');
   }

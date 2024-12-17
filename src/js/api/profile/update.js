@@ -34,8 +34,6 @@ export async function updateProfile(bio, { avatar, banner }) {
     bio: bio,
   };
 
-  console.log('Payload being sent:', oldData);
-
   const infoOptions = {
     method: 'PUT',
     headers: myHeaders,
