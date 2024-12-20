@@ -70,7 +70,7 @@ export function renderSingleAuctionCard(info, container, handleBid) {
              alt="${seller.name}" 
              class="w-10 h-10 rounded-full border">
         <div class="ml-3">
-          <p class="text-sm font-medium">${seller.name || 'Unknown Seller'}</p>
+          <p class="text-md font-medium">${seller.name || 'Unknown Seller'}</p>
         </div>
       </a>
     </div>
