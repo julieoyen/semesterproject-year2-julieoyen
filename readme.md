@@ -1,10 +1,15 @@
 # Bidalong Auction Website
-
+### Preview of home page and Single listing page
+![Skjermopptak6-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/951020eb-43e3-41cc-a20c-b32080a0fd83)
+### Preview of profile page and Edit listing page
+![opptak4-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f6b10abf-f36e-4099-b17e-8bc07bc767f2)
 ## Description
 
 The Bidalong Auction Website is a dynamic web application designed as a platform for users to create and participate in online auctions. Users can register, list items for bidding, place bids on items, and manage their profiles. This project showcases the skills developed over three semesters and integrates a front-end interface with a provided API.
 
+
 ## Features
+
 
 - User registration and login for users with `stud.noroff.no` emails
 - Profile management with avatar updates and credit balance display
