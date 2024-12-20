@@ -3,7 +3,17 @@
 ![Skjermopptak6-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/951020eb-43e3-41cc-a20c-b32080a0fd83)
 ### Preview of profile page and Edit listing page
 ![opptak4-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f6b10abf-f36e-4099-b17e-8bc07bc767f2)
-## Description
+
+
+## Table of Contents
+1. [Project Description](#project-description)
+2. [Features](#features)
+3. [User Stories](#user-stories)
+4. [Technology Used](#technology-used)
+5. [Installation Instructions](#installation-instructions)
+7. [Credits](#credits)
+
+## Project Description
 
 The Bidalong Auction Website is a dynamic web application designed as a platform for users to create and participate in online auctions. Users can register, list items for bidding, place bids on items, and manage their profiles. This project showcases the skills developed over three semesters and integrates a front-end interface with a provided API.
 
@@ -20,12 +30,24 @@ The Bidalong Auction Website is a dynamic web application designed as a platform
 - Search functionality for unregistered users to browse listings
 - Responsive design for a seamless experience on various devices
 
-## Technologies Used
+## User Stories
+
+1. **For registered users**:
+   - Register with a `stud.noroff.no` email to access all features.
+   - Login to view and manage your profile, including avatar updates and credit balance.
+   - Create auction listings with a title, deadline, description, and media.
+   - Place bids on available listings and view bids on your own listings.
+2. **For unregistered users**:
+   - Search and browse available auction listings.
+
+## Technology Used
 
 - HTML5
 - Tailwind CSS
 - JavaScript (ES6)
+- PostCSS
 - Vite
+- Prettier
 - Font Awesome (for icons)
 - Netlify (for deployment)
 - RESTful API (provided by Noroff)
@@ -86,21 +108,9 @@ npm start
 
 The application will be accessible at `http://localhost:3000` in your preferred web browser.
 
-## Usage
-
-1. **For registered users**:
-   - Register with a `stud.noroff.no` email to access all features.
-   - Login to view and manage your profile, including avatar updates and credit balance.
-   - Create auction listings with a title, deadline, description, and media.
-   - Place bids on available listings and view bids on your own listings.
-2. **For unregistered users**:
-   - Search and browse available auction listings.
-
-## API Integration
-
-This project uses the Auction Endpoints provided by the Noroff API documentation. Refer to the [API Swagger Documentation](#) for detailed endpoint information.
-
-## Acknowledgments
+## Credits
 
 - [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework.
 - [Font Awesome](https://fontawesome.com/) for the icon library.
+- Adobe Express
+- Figma
