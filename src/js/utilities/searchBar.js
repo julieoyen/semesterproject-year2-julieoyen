@@ -31,7 +31,6 @@ async function handleSearchInput(event) {
   const filterContainer = document.getElementById('filter-container');
 
   if (query) {
-    // Hide the filter container when searching
     if (filterContainer) filterContainer.style.display = 'none';
 
     try {
@@ -47,7 +46,7 @@ async function handleSearchInput(event) {
     }
   } else {
     if (filterContainer) {
-      filterContainer.style.display = 'flex'; // Ensure the container is displayed
+      filterContainer.style.display = 'flex';
       filterContainer.classList.add(
         'flex',
         'flex-col',
@@ -56,7 +55,7 @@ async function handleSearchInput(event) {
         'space-y-6'
       );
     }
-    fetchAndRenderAuctions(1); // Reset to default auction listings
+    fetchAndRenderAuctions(1);
   }
 }
 

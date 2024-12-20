@@ -15,8 +15,8 @@ export async function updateListing(event) {
   event.preventDefault();
 
   const errorContainer = document.getElementById('error-container');
-  errorContainer.innerHTML = ''; // Clear previous errors
-  errorContainer.classList.add('hidden'); // Hide error container initially
+  errorContainer.innerHTML = '';
+  errorContainer.classList.add('hidden');
 
   try {
     validateForm();

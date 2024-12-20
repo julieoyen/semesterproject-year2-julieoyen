@@ -42,7 +42,6 @@ export async function fetchListings(
     }
 
     const listings = await response.json();
-    console.log(listings);
     return listings;
   } catch (error) {
     console.error('Error fetching listings:', error);

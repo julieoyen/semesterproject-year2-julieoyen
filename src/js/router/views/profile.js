@@ -17,12 +17,8 @@ if (profileName) {
 
 async function loadProfile(profileName) {
   try {
-    // Fetch profile data (listings, wins, and bids included)
     const profileData = await fetchAllProfileData(profileName);
 
-    console.log('Fetched Profile Data:', profileData); // Log the full profile data for debugging
-
-    // Ensure all required data is present
     if (
       profileData &&
       profileData.profile &&
@@ -32,7 +28,6 @@ async function loadProfile(profileName) {
     ) {
       const { profile, listings, wins, bids } = profileData;
 
-      // Call renderProfilePage with the correct data
       renderProfilePage(profile, listings, wins, bids);
     } else {
       throw new Error('Profile, listings, wins, or bids are undefined.');

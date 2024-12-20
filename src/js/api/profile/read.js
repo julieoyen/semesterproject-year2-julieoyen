@@ -43,11 +43,10 @@ export async function fetchAllProfileData(name) {
       `${API_AUCTION_PROFILES}/${name}/bids?_listings=true&_seller=true&_bids=true&bidder=true`
     );
 
-    // Enrich bids with listing information and filter for active bids
     const activeBids = bidsData.data
       .filter((bid) => {
         const listing = bid.listing || {};
-        return listing.endsAt && new Date(listing.endsAt) > new Date(); // Active listings only
+        return listing.endsAt && new Date(listing.endsAt) > new Date();
       })
       .map((bid) => {
         const listing = bid.listing || {};

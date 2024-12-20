@@ -14,8 +14,6 @@ import { API_KEY, API_AUCTION_PROFILES } from '../../utilities/constants';
  * @throws {Error} - Throws an error if the update fails.
  */
 export async function updateProfile(bio, { avatar, banner }) {
-  console.log('Starting profile update...');
-
   const myHeaders = new Headers();
   myHeaders.append('X-Noroff-API-Key', API_KEY);
 
@@ -23,35 +21,31 @@ export async function updateProfile(bio, { avatar, banner }) {
   myHeaders.append('Authorization', `Bearer ${token}`);
   myHeaders.append('Content-Type', 'application/json');
 
-  // Construct the payload dynamically
   const payload = {};
 
   if (bio) {
-    payload.bio = bio; // Include bio if provided
+    payload.bio = bio;
   }
 
   if (avatar?.url) {
     payload.avatar = {
       url: avatar.url,
-      alt: avatar.alt || '', // Use default alt if not provided
+      alt: avatar.alt || '',
     };
   }
 
   if (banner?.url) {
     payload.banner = {
       url: banner.url,
-      alt: banner.alt || '', // Use default alt if not provided
+      alt: banner.alt || '',
     };
   }
 
-  // Ensure at least one property is provided
   if (Object.keys(payload).length === 0) {
     throw new Error(
       'At least one property (bio, avatar, or banner) must be provided.'
     );
   }
-
-  console.log('Payload to be sent:', JSON.stringify(payload));
 
   const username = getMyName();
   const url = `${API_AUCTION_PROFILES}/${username}`;
@@ -64,8 +58,6 @@ export async function updateProfile(bio, { avatar, banner }) {
       redirect: 'follow',
     });
 
-    console.log('Response status:', response.status);
-
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Response error text:', errorText);
@@ -73,7 +65,6 @@ export async function updateProfile(bio, { avatar, banner }) {
     }
 
     const updatedProfile = await response.json();
-    console.log('Profile updated successfully:', updatedProfile);
     return updatedProfile;
   } catch (error) {
     console.error('Error updating profile:', error.message);
