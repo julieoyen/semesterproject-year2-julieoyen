@@ -1,3 +1,9 @@
+/**
+ * This module renders the header of the web application, including the navigation menu, search bar,
+ * and user-specific functionality such as profile links and credit display. The module also includes
+ * functionality for toggling the dark mode and handling the hamburger menu visibility.
+ */
+
 import { initDarkMode } from '../utilities/darkMode';
 import { getMyName, getMyToken, getIDFromURL } from '../utilities/getInfo';
 import { getCredits } from '../utilities/getCredit';
@@ -17,12 +23,12 @@ export async function renderHeader() {
 
   const loggedInUserCredit = `
 <div class="flex hidden items-center justify-center lg:block">
-<span class="px-2 flex flex-col font-bebas text-3xl items-center justify-center rounded-lg text-md ">YOUR CREDIT:<span id="user-credits-desktop">Loading...</span></span>
+<span class="px-2 flex flex-col text-background-dark dark:text-white font-bebas text-3xl items-center justify-center rounded-lg text-md ">YOUR CREDIT:<span id="user-credits-desktop">Loading...</span></span>
 </div>`;
 
   const loggedInUserDesktop = `
     <div class="flex md:mt-6 items-center">
-      <nav class="hidden text-xl text-black dark:text-white lg:block" aria-label="Main Navigation">
+      <nav class="hidden text-xl text-background-dark dark:text-white lg:block" aria-label="Main Navigation">
         <ul class="flex flex-row justify-center space-x-8" role="menu">
         <li role="none">
           ${isLoggedIn() ? loggedInUserCredit : ''}
@@ -32,7 +38,7 @@ export async function renderHeader() {
             <a role="menuitem" class="hover:text-button font-bebas text-3xl dark:hover:text-primary" href="/listings/create/"><i class="fa-regular fa-square-plus fa-sm text-primary"></i>Create Listing</a>
           </li>
           <li role="none">
-            <a role="menuitem" id="my-profile-link" href="/profile/?user=${myName}" class="bg-background-dark font-bebas rounded-full text-3xl text-white dark:hover:text-primary" aria-label="View Profile">
+            <a role="menuitem" id="my-profile-link" href="/profile/?user=${myName}" class="font-bebas rounded-full text-3xl hover:text-button text-background-dark  dark:text-white dark:hover:text-primary" aria-label="View Profile">
 <i class="fa-regular fa-user fa-xs text-primary"></i>Profile
             </a>
           </li>
@@ -128,7 +134,6 @@ Log in
 
   const loggedInUser = loggedInUserDesktop + loggedInUserMobile;
   const notLoggedInUser = noUserDesktop;
-  const id = getIDFromURL();
 
   header.innerHTML = `
     <div class="grid grid-flow-col items-center justify-between py-3 px-4 sm:px-10 bg-gray-100 dark:bg-background-dark lg:gap-y-4 gap-y-6 gap-x-4">
@@ -180,5 +185,25 @@ Log in
     } catch (error) {
       console.error('Error fetching user credits:', error);
     }
+  }
+
+  // Ensure elements exist before adding event listeners
+  const hamburgerButton = document.getElementById('hamburger-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  if (hamburgerButton && mobileMenu) {
+    document.addEventListener('click', (event) => {
+      const isClickInsideMenu = mobileMenu.contains(event.target);
+      const isClickOnButton = hamburgerButton.contains(event.target);
+
+      if (!isClickInsideMenu && !isClickOnButton) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+
+    hamburgerButton.addEventListener('click', () => {
+      const isMenuHidden = mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden', !isMenuHidden);
+    });
   }
 }

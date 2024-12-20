@@ -1,3 +1,9 @@
+/**
+ * Calculates the time elapsed since a given date and returns it in a human-readable format.
+ * If the elapsed time exceeds 7 days, it returns the formatted date.
+ * @param {string|Date} postedDate - The date when the post was created.
+ * @returns {string} A string representing the time since the post was created.
+ */
 export function timeSincePosted(postedDate) {
   const now = new Date();
   const diff = now - new Date(postedDate);
@@ -25,6 +31,12 @@ export function timeSincePosted(postedDate) {
   }
 }
 
+/**
+ * Calculates the remaining time until a given end date and returns it in a human-readable format.
+ * If the remaining time exceeds 7 days, it returns the formatted end date.
+ * @param {string|Date} endsAt - The end date to calculate the remaining time until.
+ * @returns {string|undefined} A string representing the time remaining until the end date, or undefined if the date has passed.
+ */
 export function timeUntilEnds(endsAt) {
   const now = new Date();
   const endDate = new Date(endsAt);

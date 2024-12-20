@@ -5,8 +5,14 @@ import { getIDFromURL, getMyToken } from '../../utilities/getInfo';
 const id = getIDFromURL();
 const apiUrl = `${API_AUCTION_LISTINGS}/${id}`;
 
+/**
+ * Fetches the existing listing and populates the edit form.
+ */
 export async function onUpdateListing() {
   const token = getMyToken();
+  const errorContainer = document.getElementById('error-container');
+  errorContainer.innerHTML = ''; // Clear previous errors
+  errorContainer.classList.add('hidden');
 
   try {
     const response = await fetch(apiUrl, {
@@ -19,15 +25,25 @@ export async function onUpdateListing() {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch data: ${response.statusText}`);
+      const errorResponse = await response.json();
+      throw new Error(
+        errorResponse.message || `Failed to fetch data: ${response.statusText}`
+      );
     }
+
     const listingData = await response.json();
     populateForm(listingData.data);
   } catch (error) {
+    errorContainer.innerHTML = `<p>${error.message}</p>`;
+    errorContainer.classList.remove('hidden');
     console.error('Error fetching listing:', error);
   }
 }
 
+/**
+ * Populates the form fields with listing data.
+ * @param {Object} listing - The listing data to populate.
+ */
 function populateForm(listing) {
   document.querySelector('#title').value = listing.title || '';
   document.querySelector('#description').value = listing.description || '';
@@ -42,9 +58,12 @@ function populateForm(listing) {
   });
 }
 
-const imageUrlContainer = document.getElementById('image-url-container');
-const addImageUrlButton = document.getElementById('add-image-url');
-
+/**
+ * Creates an image input group with optional pre-filled values.
+ * @param {string} [url=''] - The image URL.
+ * @param {string} [alt=''] - The image alt text.
+ * @returns {HTMLElement} The input group element.
+ */
 function createImageInputGroup(url = '', alt = '') {
   const inputGroup = document.createElement('div');
   inputGroup.className = 'image-input-group';
@@ -54,7 +73,6 @@ function createImageInputGroup(url = '', alt = '') {
         src="${url}"
         alt="${alt}"
         class="w-full max-h-64 max-w-64 flex object-contain mb-2"
-        "
       />
     </div>
     <input
@@ -75,7 +93,7 @@ function createImageInputGroup(url = '', alt = '') {
     />
     <button
       type="button"
-      class="delete-image-btn mt-2 py-1 px-3 shadow-md border-2 rounded-lg text-button border-button bg-transparent hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+      class="delete-image-btn mt-2 py-1 px-3 shadow-md border-2 rounded-lg text-button border-button bg-transparent hover:bg-slate-100"
     >
       Delete
     </button>
@@ -83,7 +101,8 @@ function createImageInputGroup(url = '', alt = '') {
   return inputGroup;
 }
 
-addImageUrlButton.addEventListener('click', () => {
+document.getElementById('add-image-url').addEventListener('click', () => {
+  const imageUrlContainer = document.querySelector('#image-url-container');
   if (imageUrlContainer.children.length < 8) {
     const newInputGroup = createImageInputGroup();
     imageUrlContainer.appendChild(newInputGroup);
@@ -92,16 +111,11 @@ addImageUrlButton.addEventListener('click', () => {
   }
 });
 
-imageUrlContainer.addEventListener('click', (event) => {
-  if (event.target && event.target.classList.contains('delete-image-btn')) {
-    const inputGroup = event.target.closest('.image-input-group');
-    inputGroup.remove();
-  }
-});
-
-const listingMedia = [];
-
-listingMedia.forEach((media) => {
-  const newInputGroup = createImageInputGroup(media.url, media.alt);
-  imageUrlContainer.appendChild(newInputGroup);
-});
+document
+  .querySelector('#image-url-container')
+  .addEventListener('click', (event) => {
+    if (event.target && event.target.classList.contains('delete-image-btn')) {
+      const inputGroup = event.target.closest('.image-input-group');
+      inputGroup.remove();
+    }
+  });

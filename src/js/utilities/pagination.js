@@ -20,7 +20,7 @@ export function updatePaginationButtons(page, total, fetchResults) {
     if (currentPage > 1) {
       currentPage--;
       await fetchResults(currentPage);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 400, behavior: 'smooth' });
     }
   };
 
@@ -28,7 +28,7 @@ export function updatePaginationButtons(page, total, fetchResults) {
     if (currentPage < totalPages) {
       currentPage++;
       await fetchResults(currentPage);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 400, behavior: 'smooth' });
     }
   };
 }

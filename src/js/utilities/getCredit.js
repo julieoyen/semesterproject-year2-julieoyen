@@ -1,7 +1,10 @@
 import { API_AUCTION_PROFILES } from '../utilities/constants';
 import { headers } from '../utilities/headers';
 import { getMyToken, getMyName } from './getInfo';
-
+/**
+ * Fetches and returns the user's credit balance from the auction profile API.
+ * @returns {Promise<number>} The user's credit balance or 0 if an error occurs.
+ */
 export async function getCredits() {
   const token = getMyToken();
   const name = getMyName();

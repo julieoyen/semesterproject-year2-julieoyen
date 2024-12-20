@@ -29,7 +29,8 @@ import { timeSincePosted, timeUntilEnds } from '../utilities/formatDate';
 import { isLoggedIn, getMyToken, getMyName } from '../utilities/getInfo';
 import { deleteListing } from '../api/listings/delete';
 import defaultImage from '/images/default-img.png';
-import { showToast } from '../utilities/toast'; // Import your toast utility
+import { openModal, closeModal } from './modal';
+import { showToast } from '../utilities/toast';
 
 export function renderAuctionCard(info, container) {
   const {
@@ -273,29 +274,44 @@ export function renderAuctionCard(info, container) {
   }
 
   const deleteButton = card.querySelector(`[auction-listings-id="${id}"]`);
+  if (deleteButton && isOwner) {
+    deleteButton.addEventListener('click', () => {
+      const modal = document.getElementById('delete-confirmation-modal');
+      const confirmDelete = document.getElementById('confirm-delete');
+      const cancelDelete = document.getElementById('cancel-delete');
 
-  if (deleteButton && isOwner()) {
-    deleteButton.addEventListener('click', async () => {
-      // Show toast for confirmation prompt
-      showToast('Are you sure you want to delete this listing?');
+      if (!modal) {
+        console.error('Delete confirmation modal not found.');
+        return;
+      }
 
-      const confirmed = confirm('Are you sure you want to delete this post?');
-      if (confirmed) {
+      // Open modal
+      openModal(modal);
+
+      const handleDelete = async () => {
         try {
           await deleteListing(id);
-          card.remove();
-
-          // Show success toast
+          card.remove(); // Remove the card from the DOM
           showToast('Listing deleted successfully!');
-
-          // Dispatch the custom event
-          const event = new CustomEvent('listingDeleted', { detail: { id } });
-          document.dispatchEvent(event);
+          closeModal(modal); // Close the modal
         } catch (error) {
-          console.error(`Failed to delete listing: ${error.message}`);
-          showToast('Failed to delete the listing. Please try again.');
+          console.error('Error deleting listing:', error);
+          showToast('Failed to delete listing. Please try again.', 'error');
+        } finally {
+          // Clean up event listeners
+          confirmDelete.removeEventListener('click', handleDelete);
+          cancelDelete.removeEventListener('click', closeModalHandler);
         }
-      }
+      };
+
+      const closeModalHandler = () => {
+        closeModal(modal); // Ensure the modal is closed
+        confirmDelete.removeEventListener('click', handleDelete);
+        cancelDelete.removeEventListener('click', closeModalHandler);
+      };
+
+      confirmDelete.addEventListener('click', handleDelete);
+      cancelDelete.addEventListener('click', closeModalHandler);
     });
   }
 }

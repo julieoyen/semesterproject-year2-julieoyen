@@ -68,7 +68,7 @@ export function createFilterComponent(containerId) {
 
   container.innerHTML = `<div id="container" class="flex flex-col items-center justify-center w-full mb-3 space-y-6">
     <div class="flex flex-col items-center font-bebas text-4xl justify-center w-full"><h1>Our most popular tags</h1></div>
-    <div class="grid justify-center p-6 rounded-lg">
+    <div class="grid justify-center   sm:max-w-full max-w-[300px] p-6 rounded-lg">
       <div class="flex flex-row font-roboto font-extrabold gap-2" id="filter-tags">
         <button id="art" class="btn cursor-pointer max-w-40 max-h-40 min-w-20 min-h-20 rounded-lg lg:text-xl hover:text-primary">ART<img src="/images/art.png" alt="art-icon"></button>
         <button id="watches" class="btn cursor-pointer max-w-40 max-h-40 min-w-20 min-h-20 rounded-lg lg:text-xl hover:text-primary">WATCHES<img src="/images/watch.png" alt="watches-icon"></button>
@@ -76,12 +76,12 @@ export function createFilterComponent(containerId) {
         <button id="jewelry" class="btn cursor-pointer max-w-40 max-h-40 min-w-20 min-h-20 rounded-lg lg:text-xl hover:text-primary">JEWELRY<img src="/images/jewelry.png" alt="jewelry"></button>
       </div>
     </div>
-    <div class="grid justify-center pb-2">
-      <div class="mt-4 flex justify-center text-white gap-2">
+    <div class="grid justify-center pb-2 ">
+      <div class="mt-4 flex justify-center sm:max-w-full  max-w-[300px] text-white gap-2">
         <button id="show-all" class="btn active cursor-pointer bg-button hover:bg-button-hover py-1 px-2 rounded-lg lg:text-lg text-sm">Show All</button>
-        <button id="highest-amount-bid" class="bg-button hover:bg-button-hover py-1 px-2 rounded-lg lg:text-lg text-sm">Hottest Listings</button>
         <button id="listing-new" class="bg-button hover:bg-button-hover py-1 px-2 rounded-lg lg:text-lg text-sm">New Listings</button>
-        <button id="listing-ended" class="bg-button hover:bg-button-hover py-1 px-2 rounded-lg lg:text-lg text-sm">Ended Listings</button>
+         <button id="highest-amount-bid" class="bg-button hover:bg-button-hover py-1 px-2 rounded-lg lg:text-lg text-sm">Ending soon</button>
+         <button id="listing-ended" class="bg-button hover:bg-button-hover py-1 px-2 rounded-lg lg:text-lg text-sm">Ended Listings</button>
       </div>
     </div>
   </div>`;

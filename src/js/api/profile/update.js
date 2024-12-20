@@ -1,3 +1,4 @@
+// updateProfile.js
 import { getKey } from '../auth/key';
 import { getMyName } from '../../utilities/getInfo.js';
 import { API_KEY, API_AUCTION_PROFILES } from '../../utilities/constants';
@@ -7,12 +8,14 @@ import { API_KEY, API_AUCTION_PROFILES } from '../../utilities/constants';
  *
  * @param {string} bio - The user's bio to be updated.
  * @param {Object} param1 - An object containing avatar and banner URLs.
- * @param {string} param1.avatar - The URL of the user's avatar.
- * @param {string} param1.banner - The URL of the user's banner.
+ * @param {Object} param1.avatar - The URL of the user's avatar.
+ * @param {Object} param1.banner - The URL of the user's banner.
  * @returns {Promise<Object>} - The updated profile data.
  * @throws {Error} - Throws an error if the update fails.
  */
 export async function updateProfile(bio, { avatar, banner }) {
+  console.log('Starting profile update...');
+
   const myHeaders = new Headers();
   myHeaders.append('X-Noroff-API-Key', API_KEY);
 
@@ -20,48 +23,60 @@ export async function updateProfile(bio, { avatar, banner }) {
   myHeaders.append('Authorization', `Bearer ${token}`);
   myHeaders.append('Content-Type', 'application/json');
 
-  if (avatar && !isValidUrl(avatar)) {
-    throw new Error('Invalid avatar URL provided.');
+  // Construct the payload dynamically
+  const payload = {};
+
+  if (bio) {
+    payload.bio = bio; // Include bio if provided
   }
 
-  if (banner && !isValidUrl(banner)) {
-    throw new Error('Invalid banner URL provided.');
+  if (avatar?.url) {
+    payload.avatar = {
+      url: avatar.url,
+      alt: avatar.alt || '', // Use default alt if not provided
+    };
   }
 
-  const oldData = {
-    avatar: avatar ? { url: avatar, alt: '' } : undefined,
-    banner: banner ? { url: banner, alt: '' } : undefined,
-    bio: bio,
-  };
+  if (banner?.url) {
+    payload.banner = {
+      url: banner.url,
+      alt: banner.alt || '', // Use default alt if not provided
+    };
+  }
 
-  const infoOptions = {
-    method: 'PUT',
-    headers: myHeaders,
-    body: JSON.stringify(oldData),
-    redirect: 'follow',
-  };
+  // Ensure at least one property is provided
+  if (Object.keys(payload).length === 0) {
+    throw new Error(
+      'At least one property (bio, avatar, or banner) must be provided.'
+    );
+  }
+
+  console.log('Payload to be sent:', JSON.stringify(payload));
 
   const username = getMyName();
   const url = `${API_AUCTION_PROFILES}/${username}`;
 
   try {
-    const response = await fetch(url, infoOptions);
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: myHeaders,
+      body: JSON.stringify(payload),
+      redirect: 'follow',
+    });
+
+    console.log('Response status:', response.status);
+
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('Response error text:', errorText);
       throw new Error(`Failed to update profile: ${errorText}`);
     }
-    return await response.json();
+
+    const updatedProfile = await response.json();
+    console.log('Profile updated successfully:', updatedProfile);
+    return updatedProfile;
   } catch (error) {
     console.error('Error updating profile:', error.message);
     throw error;
-  }
-}
-
-function isValidUrl(url) {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
   }
 }
