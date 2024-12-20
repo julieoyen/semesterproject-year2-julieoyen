@@ -5,12 +5,6 @@ import { headers } from '../../utilities/headers';
 export async function deleteListing(id) {
   const API_URL = `${API_AUCTION_LISTINGS}/${id}`;
   const token = getMyToken();
-
-  const confirmed = confirm('Are you sure you want to delete this post?');
-  if (!confirmed) {
-    return;
-  }
-
   try {
     const baseHeaders = headers();
     baseHeaders.append('Authorization', `Bearer ${token}`);
@@ -20,11 +14,6 @@ export async function deleteListing(id) {
       method: 'DELETE',
       headers: baseHeaders,
     });
-
-    if (response.status === 204) {
-      alert('Listing has been deleted successfully.');
-      return;
-    }
 
     if (!response.ok) {
       const errorData = await response.json();

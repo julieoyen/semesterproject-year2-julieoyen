@@ -1,9 +1,7 @@
-// ui/listings/bid.js
 import { submitBid } from '../../api/listings/submitBid';
 import { closeModal } from '../../components/modal';
-import { getCredits } from '../../utilities/getCredit';
-
-const availableCredit = getCredits();
+import { getMyCredit } from '../../utilities/getInfo';
+import { showToast } from '../../utilities/toast.js';
 
 export async function handleBid({
   id,
@@ -14,31 +12,52 @@ export async function handleBid({
 }) {
   console.log('Starting bid process:', { id, bidAmount, highestBid });
 
+  const availableCredit = getMyCredit(); // Retrieve user's credit from local storage
+
   // Validate bid amount
   if (isNaN(bidAmount) || bidAmount <= highestBid) {
-    feedback.textContent = `Bid must be higher than $${highestBid}`;
+    feedback.textContent = `Bid must be higher than $${highestBid}.`;
     feedback.classList.remove('hidden');
-    return;
+    return; // Stop further execution
   }
 
-  feedback.textContent = 'Placing bid...';
+  // Check available credits
+  if (bidAmount > availableCredit) {
+    feedback.textContent = `You don't have enough credits.`;
+    feedback.classList.remove('hidden');
+    return; // Stop further execution
+  }
+
   feedback.classList.remove('hidden');
 
   try {
-    const result = await submitBid(bidAmount);
+    const result = await submitBid(id, bidAmount);
 
+    // Handle API-specific errors
     if (result.error) {
-      feedback.textContent = result.error || 'Failed to place bid.';
+      feedback.textContent = result.error;
       feedback.classList.remove('hidden');
       return;
     }
 
+    // Success case
+    feedback.classList.add('hidden');
     closeModal(modal);
-    alert('Bid placed successfully!');
-    location.reload(); // Refresh page to reflect updated bids
+
+    // Optionally update user's credit in local storage
+    const newCredit = availableCredit - bidAmount;
+    localStorage.setItem('userCredit', JSON.stringify(newCredit));
+
+    // Show success toast and refresh data after toast disappears
+    showToast('Bid placed successfully!', 'success', () => {
+      // Instead of reloading the page, re-fetch the necessary data here
+      console.log('Refreshing data after successful bid.');
+      location.reload(); // Replace this with dynamic data refresh if possible
+    });
   } catch (error) {
-    console.error('Error during bid process:', error.message);
-    feedback.textContent = error.message || 'Failed to place bid.';
+    // Show API error message or generic fallback
+    feedback.textContent =
+      error.message || 'An error occurred while placing your bid.';
     feedback.classList.remove('hidden');
   }
 }

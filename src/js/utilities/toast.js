@@ -3,22 +3,16 @@
  * @param {string} message - The message to display in the toast.
  * @param {'success' | 'error'} [type='success'] - Type of toast, determines the background color.
  */
-export function showToast(message, type = 'success') {
+export function showToast(message, type = 'success', callback) {
   const toast = document.getElementById('toast');
   if (!toast) return;
 
-  toast.classList.remove(
-    'hidden',
-    'opacity-0',
-    'bg-green-500',
-    'bg-red-500',
-    'text-white'
-  );
+  toast.className = `hidden fixed inset-0 flex items-center justify-center z-50 bg-opacity-90 p-4 rounded-lg transition-opacity duration-300 font-roboto text-xl ease-in-out`;
 
   if (type === 'error') {
     toast.classList.add('bg-red-500', 'text-white');
   } else {
-    toast.classList.add('bg-green-500', 'text-white');
+    toast.classList.add('bg-background-dark', 'text-white');
   }
 
   toast.textContent = message;
@@ -26,6 +20,9 @@ export function showToast(message, type = 'success') {
 
   setTimeout(() => {
     toast.classList.add('opacity-0');
-    setTimeout(() => toast.classList.add('hidden'), 300);
+    setTimeout(() => {
+      toast.classList.add('hidden');
+      if (callback) callback();
+    }, 300);
   }, 3000);
 }

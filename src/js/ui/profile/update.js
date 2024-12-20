@@ -1,7 +1,6 @@
 import { updateProfile } from '../../api/profile/update';
 import { setupModalHandlers, closeModal } from '../../components/modal';
 
-// Avatar Modal
 setupModalHandlers(
   {
     modalId: 'banner-modal',
@@ -11,7 +10,6 @@ setupModalHandlers(
     formId: 'edit-banner-form',
   },
   (modal, form) => {
-    // Pre-fill the form with current values
     const bioText = document.getElementById('bio-text').textContent || '';
     const avatarUrl = document.querySelector('.profile-header img').src || '';
     const bannerStyle =
@@ -29,8 +27,6 @@ setupModalHandlers(
 
     try {
       await updateProfile(bioText, { avatar: avatarUrl, banner: bannerUrl });
-
-      // Update the UI with new values
       const profileHeader = document.querySelector('.profile-header');
       const avatarImg = profileHeader.querySelector('img');
       avatarImg.src = avatarUrl;

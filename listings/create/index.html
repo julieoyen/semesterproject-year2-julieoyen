@@ -43,7 +43,10 @@
         >
           Create Listing
         </h1>
-
+        <div
+          id="error-container"
+          class="hidden bg-red-100 text-red-700 border border-red-500 p-4 rounded mb-4"
+        ></div>
         <form
           id="create-listing-form"
           name="createPost"
@@ -140,16 +143,13 @@
               id="bid-ends"
               name="bid-ends"
               placeholder="dd-mm-yy"
-              value="2024-12-16T19:30"
+              value="2025-01-16T19:30"
               min="2024-11-28T00:00"
-              max="2025-06-14T00:00"
+              max="2027-06-14T00:00"
               class="mt-1 block w-full object-fill rounded-md border-2 text-gray-700 border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2 text-sm sm:text-base"
             />
           </div>
-          <div
-            id="toast"
-            class="hidden font-roboto font-semibold fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl bg-background-dark dark:bg-background-light text-white dark:text-background-dark py-12 px-12 rounded-lg shadow-lg transition-opacity duration-300 opacity-0"
-          ></div>
+          <div id="toast"></div>
 
           <div class="flex justify-center items-center mt-4 space-x-2">
             <button

@@ -1,10 +1,10 @@
-//components/singleard.js:
-
 import { timeSincePosted, timeUntilEnds } from '../../utilities/formatDate';
 import { isLoggedIn, getMyName, getIDFromURL } from '../../utilities/getInfo';
-import { openModal, closeModal } from '../../components/modal';
 import defaultImage from '/images/default-img.png';
 import defaultAvatar from '/images/default-avatar.png';
+import { showToast } from '../../utilities/toast';
+import { deleteListing } from '../../api/listings/delete';
+import { openModal, closeModal } from '../../components/modal';
 
 export function renderSingleAuctionCard(info, container, handleBid) {
   const {
@@ -27,9 +27,10 @@ export function renderSingleAuctionCard(info, container, handleBid) {
 
   const card = document.createElement('div');
   card.className =
-    'border rounded-lg shadow-lg overflow-hidden max-w-lg mb-5 text-left bg-white flex flex-col min-w-[500px] min-h-[600px]';
+    'border rounded-lg shadow-lg overflow-hidden max-w-lg mb-5 text-left bg-white flex flex-col min-w-[300px] lg:min-w-[500px] lg:min-h-[600px]';
 
   const limitedMedia = media.slice(0, 8);
+  document.title = `${title}`;
 
   const imagesHtml = limitedMedia
     .map((image, index) => {
@@ -39,7 +40,7 @@ export function renderSingleAuctionCard(info, container, handleBid) {
                alt="${image.alt || 'Auction Image'}" 
                class="w-full h-full object-cover"  
                loading="lazy" 
-               onerror="this.onerror=null; this.src="defaultImage";">
+               onerror="this.onerror=null; this.src='${defaultImage}';">
       </div>
     `;
     })
@@ -49,7 +50,7 @@ export function renderSingleAuctionCard(info, container, handleBid) {
     ? sortedBids
         .map(
           (bid, index) => `
-      <li class="flex items-center justify-between ${index === 0 ? 'font-bold text-xl text-blue-500' : ''}">
+      <li class="flex items-center justify-between ${index === 0 ? 'font-bold text-xl text-button' : ''}">
         <a href="/profile/?user=${bid.bidder?.name || 'anonymous'}" class="flex items-center">
           <img src="${bid.bidder?.avatar?.url || defaultAvatar}" alt="${bid.bidder?.name || 'Anonymous'}" 
                class="w-6 h-6 rounded-full mr-2">
@@ -63,45 +64,22 @@ export function renderSingleAuctionCard(info, container, handleBid) {
 
   card.innerHTML = `
   <div class="rounded-lg w-full mx-auto bg-white flex flex-col h-full">
-    ${
-      loggedIn
-        ? `<div class="mx-4 mt-4 flex items-center text-black">
-            <a href="/profile/?user=${seller.name}" class="flex items-center mb-3">
-              <img src="${seller.avatar.url || '/images/default-avatar.png'}"
-                   alt="${seller.name}" 
-                   class="w-10 h-10 rounded-full border">
-              <div class="ml-3">
-                <p class="text-sm font-medium">${seller.name || 'Unknown Seller'}</p>
-              </div>
-            </a>
-          </div>`
-        : `<div class="mx-4 mt-4 flex items-center text-black">
-            <img src="${seller.avatar.url || '/images/default-avatar.png'}"
-                 alt="${seller.name}" 
-                 class="w-10 h-10 rounded-full mb-3 border">
-            <div class="ml-3">
-              <p class="text-md mb-3 font-semibold">${seller.name || 'Unknown Seller'}</p>
-            </div>
-          </div>`
-    }
+    <div class="mx-4 mt-4 flex items-center text-black">
+      <a href="/profile/?user=${seller.name}" class="flex items-center mb-3">
+        <img src="${seller.avatar.url || '/images/default-avatar.png'}"
+             alt="${seller.name}" 
+             class="w-10 h-10 rounded-full border">
+        <div class="ml-3">
+          <p class="text-sm font-medium">${seller.name || 'Unknown Seller'}</p>
+        </div>
+      </a>
+    </div>
     <div class="relative overflow-hidden w-full h-80 flex-shrink-0">
       <div class="absolute top-2 right-2 z-10 text-sm px-3 py-1 rounded ${hasEnded ? 'bg-gray-300 text-black' : 'bg-button text-white'}">
         Bidding ${hasEnded ? 'ended' : 'ends'} 
         <span class="font-medium">${hasEnded ? timeSincePosted(endsAt) : timeUntilEnds(endsAt)}</span>
       </div>
       ${imagesHtml}
-      ${
-        limitedMedia.length > 1
-          ? `
-            <button class="absolute rounded-md bottom-4 right-4 bg-white border-2 border-button hover:bg-button hover:text-white w-8 h-8 flex items-center justify-center text-black" data-action="next">
-              &#x276F;
-            </button>
-            <button class="absolute rounded-md bottom-4 left-4 bg-white border-2 border-button hover:bg-button hover:text-white w-8 h-8 flex items-center justify-center text-black" data-action="prev">
-              &#x276E;
-            </button>
-          `
-          : ''
-      }
     </div>
     <div class="flex flex-col flex-grow p-6">
       <h1 class="lg:text-2xl text-xl text-black font-bold truncate">${title}</h1>
@@ -129,7 +107,7 @@ export function renderSingleAuctionCard(info, container, handleBid) {
             `
             : loggedIn && !hasEnded
               ? `
-                <button class="bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600" 
+                <button class="bg-button text-white px-5 py-3 rounded hover:button-hover" 
                   data-modal-trigger="bid-modal" data-auction-id="${id}">
                   Bid Now
                 </button>
@@ -145,74 +123,22 @@ export function renderSingleAuctionCard(info, container, handleBid) {
   </div>
   `;
 
-  const slides = card.querySelectorAll('.slide');
-  let currentIndex = 0;
+  container.appendChild(card);
 
-  const updateSlides = () => {
-    slides.forEach((slide, index) => {
-      slide.classList.remove(
-        'translate-x-0',
-        'translate-x-full',
-        '-translate-x-full'
-      );
-      slide.classList.add(
-        index === currentIndex
-          ? 'translate-x-0'
-          : index > currentIndex
-            ? 'translate-x-full'
-            : '-translate-x-full'
-      );
-    });
-  };
+  const deleteButton = card.querySelector(`[auction-listings-id="${id}"]`);
+  if (deleteButton && isOwner) {
+    deleteButton.addEventListener('click', async () => {
+      const confirmed = confirm('Are you sure you want to delete this post?');
+      if (!confirmed) return;
 
-  const nextBtn = card.querySelector('[data-action="next"]');
-  const prevBtn = card.querySelector('[data-action="prev"]');
-
-  nextBtn?.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % slides.length;
-    updateSlides();
-  });
-
-  prevBtn?.addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-    updateSlides();
-  });
-
-  updateSlides();
-
-  const bidNowButton = card.querySelector('[data-modal-trigger="bid-modal"]');
-  if (bidNowButton) {
-    bidNowButton.addEventListener('click', () => {
-      const modal = document.getElementById('bid-modal');
-      if (modal) {
-        modal.dataset.auctionId = id;
-        openModal(modal);
-
-        const bidInput = modal.querySelector('#bid-amount');
-        const feedback = modal.querySelector('#bid-feedback');
-        const submitButton = modal.querySelector('#submit-bid-btn');
-
-        if (!submitButton || !bidInput) return;
-
-        submitButton.addEventListener('click', () => {
-          const bidAmount = parseFloat(bidInput.value);
-          handleBid({ id, bidAmount, highestBid, feedback, modal });
-        });
-
-        const closeModalButton = modal.querySelector('#close-modal-btn');
-        closeModalButton?.addEventListener('click', () => {
-          closeModal(modal);
-        });
-
-        modal.addEventListener('click', (event) => {
-          if (event.target === modal) closeModal(modal);
-        });
+      try {
+        await deleteListing(id);
+        showToast('Listing deleted successfully!');
+        window.location.href = history.go(-1);
+      } catch (error) {
+        console.error(`Failed to delete listing: ${error.message}`);
+        showToast('Failed to delete the listing. Please try again.', 'error');
       }
     });
-  }
-
-  if (container) {
-    container.innerHTML = '';
-    container.appendChild(card);
   }
 }

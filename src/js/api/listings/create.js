@@ -2,15 +2,22 @@ import { API_AUCTION_LISTINGS } from '../../utilities/constants';
 import { headers } from '../../utilities/headers';
 import { getKey } from '../auth/key';
 
-export async function createListing({
+/**
+ * Submits a new auction listing to the API.
+ * @param {Object} params - The listing parameters.
+ * @param {string} params.title - The title of the listing.
+ * @param {string} params.description - The description of the listing.
+ * @param {string[]} [params.tags=[]] - An array of tags associated with the listing.
+ * @param {Array<{url: string, alt: string}>} [params.media=[]] - Array of media objects with URLs and alt text.
+ * @param {string} params.endsAt - The end date and time in ISO format.
+ * @throws Will throw an error if validation or submission fails.
+ * @returns {Promise<Object|void>} The response from the API or nothing for a 204 response.
+ */
+export async function submitListing({
   title,
-
   description,
-
   tags = [],
-
   media = [],
-
   endsAt,
 }) {
   if (!title || title.trim() === '') {
@@ -37,32 +44,25 @@ export async function createListing({
     })),
     endsAt: new Date(endsAt).toISOString(),
   };
-  console.log(payload);
+
   try {
     const response = await fetch(apiUrl, {
       method: 'POST',
-
       headers: requestHeaders,
-
       body: JSON.stringify(payload),
     });
 
     if (response.status === 204) {
-      return; // Successfully created, no further action needed
+      return;
     }
 
     if (!response.ok) {
       const errorResponse = await response.json();
-
-      console.error('API Error Details:', errorResponse);
-
       throw new Error(errorResponse.message || 'Failed to create listing.');
     }
 
-    return await response.json(); // This line may not be reached if the response is 204
+    return await response.json();
   } catch (error) {
-    console.error('Error creating listing:', error);
-
     throw new Error('Unable to create the listing. Please try again later.');
   }
 }

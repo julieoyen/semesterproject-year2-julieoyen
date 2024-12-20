@@ -1,4 +1,3 @@
-//router/views/listing.js
 import { fetchListing } from '../../api/listings/read';
 import { renderSingleAuctionCard } from '../../ui/listings/read';
 import { renderHeader } from '../../components/header';

@@ -26,3 +26,7 @@ export function isLoggedIn() {
 export function getMyAvatar() {
   return JSON.parse(localStorage.getItem('userAvatar'));
 }
+
+export function getMyCredit() {
+  return JSON.parse(localStorage.getItem('myCredits'));
+}

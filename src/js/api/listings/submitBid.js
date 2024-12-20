@@ -1,17 +1,20 @@
-//api/listings/submitbid.js:
 import { API_AUCTION_LISTINGS } from '../../utilities/constants';
-import { getIDFromURL } from '../../utilities/getInfo';
 import { loggedInHeaders } from '../../utilities/headers';
-import { getKey } from '../../api/auth/key';
-const apiUrl = API_AUCTION_LISTINGS;
 
-export async function submitBid(amount) {
-  const id = getIDFromURL();
+/**
+ * Submits a bid for a specific auction.
+ * @param {string} id - The auction ID.
+ * @param {number} amount - The bid amount.
+ * @returns {Promise<Object>} - The API response data.
+ * @throws {Error} - Throws an error if the request fails.
+ */
+export async function submitBid(id, amount) {
+  const apiUrl = `${API_AUCTION_LISTINGS}/${id}/bids`;
   const myHeaders = await loggedInHeaders();
   const body = JSON.stringify({ amount });
 
   try {
-    const response = await fetch(`${apiUrl}/${id}/bids`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: myHeaders,
       body: body,
@@ -19,8 +22,11 @@ export async function submitBid(amount) {
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error('Error');
+      console.error('API Error:', data);
+      throw new Error(data.error || 'Failed to place bid.');
     }
+
+    console.log('Bid submitted successfully:', data);
     return data;
   } catch (error) {
     console.error('Error during bid submission:', error.message);

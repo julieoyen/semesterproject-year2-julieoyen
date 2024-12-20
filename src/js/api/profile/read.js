@@ -1,12 +1,8 @@
 import { API_AUCTION_PROFILES } from '../../utilities/constants';
 import { loggedInHeaders } from '../../utilities/headers';
 
-const BASE_URL = API_AUCTION_PROFILES;
 let myHeaders;
 
-/**
- * Get or initialize headers for requests
- */
 async function getHeaders() {
   if (!myHeaders) {
     myHeaders = await loggedInHeaders();
@@ -14,50 +10,67 @@ async function getHeaders() {
   return myHeaders;
 }
 
-/**
- * Fetch profile data with optional query parameters
- */
-async function fetchProfileData(profileName, options = {}) {
-  const params = new URLSearchParams({ ...options }).toString();
-  const endpoint = `${BASE_URL}/${profileName}?${params}`;
+async function fetchData(url) {
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: await getHeaders(),
+  });
 
-  try {
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      headers: await getHeaders(),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch profile: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching profile data:', error.message);
-    return null;
+  if (!response.ok) {
+    throw new Error(`Failed to fetch: ${response.statusText}`);
   }
+
+  return response.json();
 }
 
-export async function fetchAllProfileData(profileName) {
-  try {
-    const [profileResponse, bidsResponse] = await Promise.all([
-      fetchProfileData(profileName, { _listings: true, _wins: true }),
-      fetch(`${BASE_URL}/${profileName}/bids?_listings=true`, {
-        headers: await getHeaders(),
-      }),
-    ]);
+export async function fetchAllProfileData(name) {
+  if (typeof name !== 'string') {
+    console.error('Invalid name:', name);
+    throw new Error(`Invalid name: ${JSON.stringify(name)}`);
+  }
 
-    const profile = profileResponse?.data || {};
-    const bidsData = await bidsResponse.json();
+  try {
+    const profileData = await fetchData(
+      `${API_AUCTION_PROFILES}/${name}?_listings=true&_wins=true&_bids=true&_seller=true`
+    );
+    const listingsData = await fetchData(
+      `${API_AUCTION_PROFILES}/${name}/listings?_bids=true&_seller=true&bidder=true`
+    );
+    const winsData = await fetchData(
+      `${API_AUCTION_PROFILES}/${name}/wins?_seller=true&_count=true&_bids=true`
+    );
+    const bidsData = await fetchData(
+      `${API_AUCTION_PROFILES}/${name}/bids?_listings=true&_seller=true&_bids=true&bidder=true`
+    );
+
+    // Enrich bids with listing information and filter for active bids
+    const activeBids = bidsData.data
+      .filter((bid) => {
+        const listing = bid.listing || {};
+        return listing.endsAt && new Date(listing.endsAt) > new Date(); // Active listings only
+      })
+      .map((bid) => {
+        const listing = bid.listing || {};
+        const media = listing.media || [
+          { url: '/images/default-img.png', alt: 'No Image Available' },
+        ];
+        return {
+          ...bid,
+          listing: {
+            ...listing,
+            media,
+          },
+        };
+      });
 
     return {
-      profile,
-      bids: bidsData?.data || [],
-      listings: profile.listings || [],
-      wins: profile.wins || [],
+      profile: profileData.data,
+      listings: listingsData.data,
+      wins: winsData.data,
+      bids: activeBids, // Only active bids
     };
   } catch (error) {
-    console.error('Error fetching all profile data:', error.message);
+    console.error('Error fetching profile data:', error.message);
     return null;
   }
 }

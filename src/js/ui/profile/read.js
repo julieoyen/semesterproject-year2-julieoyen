@@ -2,6 +2,8 @@ import { renderAuctionCard } from '../../components/card';
 import { setupModalHandlers, closeModal } from '../../components/modal';
 import { updateProfile } from '../../api/profile/update';
 import { getMyName } from '../../utilities/getInfo';
+import { fetchAllProfileData } from '../../api/profile/read';
+import { showToast } from '../../utilities/toast';
 
 /**
  * Renders the profile page with profile data, listings, wins, and bids.
@@ -12,39 +14,33 @@ import { getMyName } from '../../utilities/getInfo';
  */
 export function renderProfilePage(profile, listings, wins, bids) {
   const { name, avatar, banner, bio } = profile;
-
   const isOwner = getMyName() === name;
-
   const profileContainer = document.getElementById('profile-container');
+
+  // Set the document title based on ownership
+  document.title = isOwner ? 'Your Profile' : `${name}'s Listings`;
 
   // Render Profile Header with Totals
   profileContainer.innerHTML = `
     <div class="profile-header relative bg-gray-200 min-h-[300px] flex flex-col items-center justify-center"
          style="background: url('${banner?.url || '/images/default-banner.jpg'}') center/cover no-repeat;">
-      ${
-        isOwner
-          ? `<button 
-               class="edit-banner-btn absolute top-2 right-2 bg-button hover:bg-button-hover text-white px-4 py-1 rounded-full shadow-md"
-               aria-label="Edit Profile">
-               ✏️ Edit
-             </button>`
-          : ''
-      }
+      ${isOwner ? `<button class="edit-banner-btn absolute top-2 right-2 bg-button hover:bg-button-hover text-white px-4 py-1 rounded-full shadow-md" aria-label="Edit Profile">✏️ Edit</button>` : ''}
       <div class="relative mt-8">
         <img src="${avatar?.url || '/images/default-avatar.png'}" 
              alt="${avatar?.alt || 'Avatar'}" 
              class="w-32 h-32 object-cover rounded-full border-4 border-white shadow-lg">
       </div>
-      <h1 class="text-3xl text-white font-bold mt-4">${name}</h1>
-      <p class="text-white text-sm mt-2">${bio || 'No bio available.'}</p>
+      <div class="flex flex-col bg-white p-4 m-4 rounded-lg min-w-[200px]">
+        <h1 class="font-bebas flex justify-center text-4xl text-black font-bold pb-3">${name}</h1>
+        <p class="text-black text-sm my-2">${bio || 'No bio available.'}</p>
+      </div>
       ${
         isOwner
-          ? `
-        <div class="flex mt-4 text-sm gap-4 text-gray-700">
-          <button class="bg-button text-white px-4 py-2 rounded">Listings: ${listings.length}</button>
-          <button class="bg-button text-white px-4 py-2 rounded">Wins: ${wins.length}</button>
-          <button class="bg-button text-white px-4 py-2 rounded">Bids: ${bids.length}</button>
-        </div>`
+          ? `<div class="flex my-4 text-sm gap-4 text-gray-700">
+                    <button class="bg-button text-white px-4 py-2 rounded">Listings: ${listings.length}</button>
+                    <button class="bg-button text-white px-4 py-2 rounded">Wins: ${wins.length}</button>
+                    <button class="bg-button text-white px-4 py-2 rounded">Bids: ${bids.length}</button>
+                  </div>`
           : ''
       }
     </div>
@@ -55,22 +51,31 @@ export function renderProfilePage(profile, listings, wins, bids) {
         <button id="close-edit-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✖</button>
         <h2 class="text-xl font-semibold mb-4">Edit Profile</h2>
         <form id="edit-form">
-          <label for="avatar-url" class="block text-sm font-medium text-gray-700">Avatar URL</label>
-          <input type="url" id="avatar-url" placeholder="Enter avatar URL" class="w-full mt-1 p-2 border rounded">
-
+          <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+          <input id="bio" name="bio" placeholder="Enter bio" class="w-full mt-1 p-2 border rounded" value="${bio || ''}">
+          <label for="avatar-url" class="block text-sm font-medium text-gray-700 mt-4">Avatar URL</label>
+          <input type="url" id="avatar-url" name="avatar-url" placeholder="Enter avatar URL" class="w-full mt-1 p-2 border rounded" value="${avatar?.url || ''}">
           <label for="banner-url" class="block text-sm font-medium text-gray-700 mt-4">Banner URL</label>
-          <input type="url" id="banner-url" placeholder="Enter banner URL" class="w-full mt-1 p-2 border rounded">
-
+          <input type="url" id="banner-url" name="banner-url" placeholder="Enter banner URL" class="w-full mt-1 p-2 border rounded" value="${banner?.url || ''}">
           <button type="submit" class="mt-4 bg-button text-white px-4 py-2 rounded hover:bg-button-hover">Save</button>
         </form>
       </div>
     </div>
-    
+              <div
+          id="toast"
+          class="hidden font-roboto font-semibold fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl bg-background-dark dark:bg-background-light text-white dark:text-background-dark py-12 px-12 rounded-lg shadow-lg transition-opacity duration-300 opacity-0"
+        ></div>
+
     <!-- Sections -->
     <div id="listings-container" class="mt-8"></div>
-    <div id="wins-container" class="mt-8"></div>
-    <div id="bids-container" class="mt-8"></div>
+    ${isOwner ? `<div id="wins-container" class="mt-8"></div>` : ''}
+    ${isOwner ? `<div id="bids-container" class="mt-8"></div>` : ''}
   `;
+
+  // Log data for debugging
+  console.log('Profile:', profile);
+  console.log('Listings:', listings);
+  console.log('Bids:', bids);
 
   // Initialize Modal Handlers Only if the User Owns the Profile
   if (isOwner) {
@@ -85,99 +90,133 @@ export function renderProfilePage(profile, listings, wins, bids) {
         // Pre-fill form with existing avatar and banner data
         form.querySelector('#avatar-url').value = avatar?.url || '';
         form.querySelector('#banner-url').value = banner?.url || '';
+        form.querySelector('#bio').value = bio || ''; // Pre-fill bio
       },
       async (formData, modal) => {
         try {
-          // Retrieve and log the new values for debugging
+          // Fetch form values
+          const newBio = formData.get('bio')?.trim();
           const newAvatarUrl = formData.get('avatar-url')?.trim();
           const newBannerUrl = formData.get('banner-url')?.trim();
 
-          console.log('New Avatar URL:', newAvatarUrl); // Debug
-          console.log('New Banner URL:', newBannerUrl); // Debug
+          console.log('Form values:', { newBio, newAvatarUrl, newBannerUrl });
+          if (!newBio && !newAvatarUrl && !newBannerUrl) {
+            console.error('All fields are empty:', {
+              newBio,
+              newAvatarUrl,
+              newBannerUrl,
+            });
+            showToast('Please provide at least one field to update.', 'error');
+
+            return; // Stop submission
+          }
 
           // Build the payload dynamically with valid inputs
           const payload = {};
-          if (newAvatarUrl && newAvatarUrl !== avatar?.url) {
-            payload.avatar = { url: newAvatarUrl };
-          }
-          if (newBannerUrl && newBannerUrl !== banner?.url) {
-            payload.banner = { url: newBannerUrl };
-          }
+          if (newBio) payload.bio = newBio;
+          if (newAvatarUrl) payload.avatar = { url: newAvatarUrl, alt: '' };
+          if (newBannerUrl) payload.banner = { url: newBannerUrl, alt: '' };
 
-          console.log('Payload to Update:', payload); // Debug
+          // Call the updateProfile function
+          const updatedProfile = await updateProfile(payload.bio, {
+            avatar: payload.avatar,
+            banner: payload.banner,
+          });
 
-          // Check if payload is still empty
-          if (Object.keys(payload).length === 0) {
-            console.warn('No updates provided. Exiting...');
-            closeModal(modal);
-            return;
-          }
+          console.log('Updated Profile Data:', updatedProfile);
 
-          // Call the updateProfile function with the payload
-          await updateProfile(payload);
-
-          // Close modal and refresh the page to show changes
           closeModal(modal);
-          location.reload();
+
+          // Update only the affected parts of the page
+          if (updatedProfile.bio) {
+            const bioElement = document.querySelector('.profile-header p');
+            if (bioElement) bioElement.textContent = updatedProfile.bio;
+          }
+
+          if (updatedProfile.avatar?.url) {
+            const avatarImg = document.querySelector('.profile-header img');
+            if (avatarImg) {
+              avatarImg.src = `${updatedProfile.avatar.url}?t=${Date.now()}`;
+              avatarImg.alt = updatedProfile.avatar.alt || 'Avatar';
+            }
+          }
+
+          if (updatedProfile.banner?.url) {
+            const bannerDiv = document.querySelector('.profile-header');
+            if (bannerDiv) {
+              bannerDiv.style.backgroundImage = `url('${updatedProfile.banner.url}?t=${Date.now()}')`;
+            }
+          }
+
+          // Show success toast
+          showToast('Profile updated successfully!', 'success');
         } catch (error) {
           console.error('Failed to update profile:', error.message);
-          alert(
-            'An error occurred while updating your profile. Please try again.'
-          );
+          showToast('An error occurred while updating your profile.', 'error');
         }
       }
     );
   }
 
-  // Render Sections
-  renderSection(
-    'Your Listings',
-    listings,
-    'listings-container',
-    'No listings available.'
-  );
-  renderSection('Listings You Won', wins, 'wins-container', 'No wins yet.');
-  renderSection(
-    'Your Bids',
-    bids.map((bid) => bid.listing),
-    'bids-container',
-    'No active bids.'
-  );
+  // Ensure listings exist before rendering
+  if (listings && listings.length > 0) {
+    renderSection(
+      isOwner ? 'Your listings' : `${name}'s listings`,
+      listings,
+      'listings-container',
+      'No listings available.'
+    );
+  } else {
+    document.getElementById('listings-container').innerHTML =
+      `<p class="text-gray-500">No listings available.</p>`;
+  }
+
+  // Render Wins and Bids only if the user is the owner
+  if (isOwner) {
+    console.log('Rendering Wins:', wins);
+    renderSection('Listings You Won', wins, 'wins-container', 'No wins yet.');
+  }
+  if (isOwner) {
+    console.log('Rendering Bids:', bids);
+    renderSection('Your Bids', bids, 'bids-container', 'No active bids.');
+  }
 }
 
 /**
  * Renders a section of auction cards
  */
-function renderSection(title, items, containerId, emptyMessage) {
+export function renderSection(title, items, containerId, emptyMessage) {
   const section = document.createElement('section');
   section.className = 'my-6';
   section.innerHTML = `
-    <h3 class="text-2xl font-semibold mb-3 text-center">${title}</h3>
-    <div id="${containerId}" class="flex flex-wrap gap-4 justify-center"></div>
-  `;
+    <h3 class="text-4xl font-bebas font-semibold mb-3 text-center">${title}</h3>
+    <div id="${containerId}" class="flex flex-wrap gap-4 justify-center"></div>`;
   document.getElementById(containerId).replaceWith(section);
 
   const container = document.getElementById(containerId);
-
-  if (items && items.length > 0) {
-    items.forEach((item) => {
-      const enrichedItem = {
-        ...item,
-        seller: item.seller || { name: 'Unknown Seller' },
-        _count: item._count || { bids: 0 },
-        bids: item.bids || [{ amount: 0 }],
+  if (title === 'Your Bids') {
+    items.forEach((bid) => {
+      const listing = bid.listing || {};
+      const seller = listing.seller || {
+        name: 'Unknown Seller',
+        avatar: { url: '/images/default-avatar.png' },
       };
+      const enrichedItem = {
+        ...listing, // Include all listing fields
+        bids: [{ amount: bid.amount, created: bid.created }], // Add bid details
+        seller,
+      };
+
+      // Render the enriched listing using the existing auction card renderer
       renderAuctionCard(enrichedItem, container);
     });
   } else {
+    items.forEach((item) => {
+      renderAuctionCard(item, container);
+    });
+  }
+
+  if (!items?.length) {
     container.innerHTML = `<p class="text-gray-500">${emptyMessage}</p>`;
   }
-}
-
-/**
- * Checks if the logged-in user is the profile owner.
- */
-function isOwner(profileName) {
-  const loggedInUser = getMyName(); // Fetches logged-in username
-  return loggedInUser && loggedInUser === profileName;
 }
