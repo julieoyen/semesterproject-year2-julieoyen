@@ -110,14 +110,14 @@ export function renderAuctionCard(info, container) {
            alt="${sellerName}" 
            class="w-10 h-10 object-cover rounded-full border">
       <div class="ml-3">
-        <p class="text-sm font-medium">${sellerName}</p>
+        <p class="text-md font-medium">${sellerName}</p>
       </div>`
           : `
     <img src="${sellerAvatar}" 
          alt="${sellerName}" 
          class="w-10 h-10 rounded-full border">
     <div class="ml-3">
-      <p class="text-medium mb-3 font-semibold">${sellerName}</p>
+      <p class="text-md font-medium">${sellerName}</p>
     </div>`
       }
       </div>
