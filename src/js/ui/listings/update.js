@@ -11,7 +11,7 @@ const apiUrl = `${API_AUCTION_LISTINGS}/${id}`;
 export async function onUpdateListing() {
   const token = getMyToken();
   const errorContainer = document.getElementById('error-container');
-  errorContainer.innerHTML = ''; // Clear previous errors
+  errorContainer.innerHTML = '';
   errorContainer.classList.add('hidden');
 
   try {

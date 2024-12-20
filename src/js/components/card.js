@@ -84,7 +84,6 @@ export function renderAuctionCard(info, container) {
         })
         .join('')
     : (() => {
-        // If no media is provided, append the default image directly.
         const fallbackContainer = document.createElement('div');
         fallbackContainer.className = 'slide absolute inset-0';
         fallbackContainer.innerHTML = `
@@ -97,7 +96,6 @@ export function renderAuctionCard(info, container) {
         return fallbackContainer.outerHTML;
       })();
 
-  // Seller Information
   const sellerName = seller?.name || 'Unknown Seller';
   const sellerAvatar = seller?.avatar?.url || '/images/default-avatar.png';
 
@@ -110,7 +108,7 @@ export function renderAuctionCard(info, container) {
           ? `<a href="/profile/?user=${sellerName}" class="flex items-center"> 
       <img src="${sellerAvatar}" 
            alt="${sellerName}" 
-           class="w-10 h-10 rounded-full border">
+           class="w-10 h-10 object-cover rounded-full border">
       <div class="ml-3">
         <p class="text-sm font-medium">${sellerName}</p>
       </div>`
@@ -228,7 +226,6 @@ export function renderAuctionCard(info, container) {
     console.error('Container element not found');
   }
 
-  // Carousel Logic
   const slides = card.querySelectorAll('.slide');
   const nextBtn = card.querySelector('[data-action="next"]');
   const prevBtn = card.querySelector('[data-action="prev"]');
@@ -243,18 +240,17 @@ export function renderAuctionCard(info, container) {
         '-translate-x-full'
       );
       if (index === currentIndex) {
-        slide.classList.add('translate-x-0'); // Centered
+        slide.classList.add('translate-x-0');
       } else if (index > currentIndex) {
-        slide.classList.add('translate-x-full'); // Slide to the right
+        slide.classList.add('translate-x-full');
       } else {
-        slide.classList.add('-translate-x-full'); // Slide to the left
+        slide.classList.add('-translate-x-full');
       }
     });
   };
 
-  // Add event listeners for carousel navigation
   nextBtn?.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % slides.length; // Loop back to the first slide
+    currentIndex = (currentIndex + 1) % slides.length;
     updateSlides();
   });
 
@@ -285,27 +281,25 @@ export function renderAuctionCard(info, container) {
         return;
       }
 
-      // Open modal
       openModal(modal);
 
       const handleDelete = async () => {
         try {
           await deleteListing(id);
-          card.remove(); // Remove the card from the DOM
+          card.remove();
           showToast('Listing deleted successfully!');
-          closeModal(modal); // Close the modal
+          closeModal(modal);
         } catch (error) {
           console.error('Error deleting listing:', error);
           showToast('Failed to delete listing. Please try again.', 'error');
         } finally {
-          // Clean up event listeners
           confirmDelete.removeEventListener('click', handleDelete);
           cancelDelete.removeEventListener('click', closeModalHandler);
         }
       };
 
       const closeModalHandler = () => {
-        closeModal(modal); // Ensure the modal is closed
+        closeModal(modal);
         confirmDelete.removeEventListener('click', handleDelete);
         cancelDelete.removeEventListener('click', closeModalHandler);
       };

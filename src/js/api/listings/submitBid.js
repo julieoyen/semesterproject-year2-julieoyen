@@ -25,8 +25,6 @@ export async function submitBid(id, amount) {
       console.error('API Error:', data);
       throw new Error(data.error || 'Failed to place bid.');
     }
-
-    console.log('Bid submitted successfully:', data);
     return data;
   } catch (error) {
     console.error('Error during bid submission:', error.message);
