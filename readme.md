@@ -57,9 +57,9 @@ npm install
 ### 4. Environment Setup
 
 Copy the .env_template File:
-
+```bash
 cp .env
-
+```
 Add Your API Key:
 
 Open the newly created .env file in your code editor.
