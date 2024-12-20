@@ -17,10 +17,8 @@ export function renderProfilePage(profile, listings, wins, bids) {
   const isOwner = getMyName() === name;
   const profileContainer = document.getElementById('profile-container');
 
-  // Set the document title based on ownership
   document.title = isOwner ? 'Your Profile' : `${name}'s Listings`;
 
-  // Render Profile Header with Totals
   profileContainer.innerHTML = `
     <div class="profile-header relative bg-gray-200 min-h-[300px] flex flex-col items-center justify-center"
          style="background: url('${banner?.url || '/images/default-banner.jpg'}') center/cover no-repeat;">
@@ -72,11 +70,6 @@ export function renderProfilePage(profile, listings, wins, bids) {
     ${isOwner ? `<div id="bids-container" class="mt-8"></div>` : ''}
   `;
 
-  // Log data for debugging
-  console.log('Profile:', profile);
-  console.log('Listings:', listings);
-  console.log('Bids:', bids);
-
   // Initialize Modal Handlers Only if the User Owns the Profile
   if (isOwner) {
     setupModalHandlers(
@@ -87,19 +80,16 @@ export function renderProfilePage(profile, listings, wins, bids) {
         formId: 'edit-form',
       },
       (modal, form) => {
-        // Pre-fill form with existing avatar and banner data
         form.querySelector('#avatar-url').value = avatar?.url || '';
         form.querySelector('#banner-url').value = banner?.url || '';
-        form.querySelector('#bio').value = bio || ''; // Pre-fill bio
+        form.querySelector('#bio').value = bio || '';
       },
       async (formData, modal) => {
         try {
-          // Fetch form values
           const newBio = formData.get('bio')?.trim();
           const newAvatarUrl = formData.get('avatar-url')?.trim();
           const newBannerUrl = formData.get('banner-url')?.trim();
 
-          console.log('Form values:', { newBio, newAvatarUrl, newBannerUrl });
           if (!newBio && !newAvatarUrl && !newBannerUrl) {
             console.error('All fields are empty:', {
               newBio,
@@ -108,26 +98,20 @@ export function renderProfilePage(profile, listings, wins, bids) {
             });
             showToast('Please provide at least one field to update.', 'error');
 
-            return; // Stop submission
+            return;
           }
-
-          // Build the payload dynamically with valid inputs
           const payload = {};
           if (newBio) payload.bio = newBio;
           if (newAvatarUrl) payload.avatar = { url: newAvatarUrl, alt: '' };
           if (newBannerUrl) payload.banner = { url: newBannerUrl, alt: '' };
 
-          // Call the updateProfile function
           const updatedProfile = await updateProfile(payload.bio, {
             avatar: payload.avatar,
             banner: payload.banner,
           });
 
-          console.log('Updated Profile Data:', updatedProfile);
-
           closeModal(modal);
 
-          // Update only the affected parts of the page
           if (updatedProfile.bio) {
             const bioElement = document.querySelector('.profile-header p');
             if (bioElement) bioElement.textContent = updatedProfile.bio;
@@ -147,8 +131,6 @@ export function renderProfilePage(profile, listings, wins, bids) {
               bannerDiv.style.backgroundImage = `url('${updatedProfile.banner.url}?t=${Date.now()}')`;
             }
           }
-
-          // Show success toast
           showToast('Profile updated successfully!', 'success');
         } catch (error) {
           console.error('Failed to update profile:', error.message);
@@ -158,7 +140,6 @@ export function renderProfilePage(profile, listings, wins, bids) {
     );
   }
 
-  // Ensure listings exist before rendering
   if (listings && listings.length > 0) {
     renderSection(
       isOwner ? 'Your listings' : `${name}'s listings`,
@@ -171,13 +152,10 @@ export function renderProfilePage(profile, listings, wins, bids) {
       `<p class="text-gray-500">No listings available.</p>`;
   }
 
-  // Render Wins and Bids only if the user is the owner
   if (isOwner) {
-    console.log('Rendering Wins:', wins);
     renderSection('Listings You Won', wins, 'wins-container', 'No wins yet.');
   }
   if (isOwner) {
-    console.log('Rendering Bids:', bids);
     renderSection('Your Bids', bids, 'bids-container', 'No active bids.');
   }
 }
@@ -202,12 +180,11 @@ export function renderSection(title, items, containerId, emptyMessage) {
         avatar: { url: '/images/default-avatar.png' },
       };
       const enrichedItem = {
-        ...listing, // Include all listing fields
-        bids: [{ amount: bid.amount, created: bid.created }], // Add bid details
+        ...listing,
+        bids: [{ amount: bid.amount, created: bid.created }],
         seller,
       };
 
-      // Render the enriched listing using the existing auction card renderer
       renderAuctionCard(enrichedItem, container);
     });
   } else {

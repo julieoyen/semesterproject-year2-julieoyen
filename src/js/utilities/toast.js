@@ -7,7 +7,7 @@ export function showToast(message, type = 'success', callback) {
   const toast = document.getElementById('toast');
   if (!toast) return;
 
-  toast.className = `hidden fixed inset-0 flex items-center justify-center z-50 bg-opacity-90 p-4 rounded-lg transition-opacity duration-300 font-roboto text-xl ease-in-out`;
+  toast.className = `hidden fixed inset-0 flex items-center justify-center z-50 w-full h-full font-bold bg-opacity-90 p-4 rounded transition-opacity duration-300 font-roboto text-3xl ease-in-out`;
 
   if (type === 'error') {
     toast.classList.add('bg-red-500', 'text-white');
