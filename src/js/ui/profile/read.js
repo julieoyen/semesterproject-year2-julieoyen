@@ -2,6 +2,7 @@ import { renderAuctionCard } from '../../components/card';
 import { setupModalHandlers, closeModal } from '../../components/modal';
 import { updateProfile } from '../../api/profile/update';
 import { getMyName } from '../../utilities/getInfo';
+import { fetchAllProfileData } from '../../api/profile/read';
 import { showToast } from '../../utilities/toast';
 
 /**
@@ -34,14 +35,15 @@ export function renderProfilePage(profile, listings, wins, bids) {
       ${
         isOwner
           ? `<div class="flex my-4 text-sm gap-4 text-gray-700">
-                    <button id="listings-btn" class="bg-button text-white px-4 py-2 rounded">Listings: ${listings.length}</button>
-                    <button id="wins-btn" class="bg-button text-white px-4 py-2 rounded">Wins: ${wins.length}</button>
-                    <button id="bids-btn" class="bg-button text-white px-4 py-2 rounded">Bids: ${bids.length}</button>
+                    <button class="bg-button text-white px-4 py-2 rounded">Listings: ${listings.length}</button>
+                    <button class="bg-button text-white px-4 py-2 rounded">Wins: ${wins.length}</button>
+                    <button class="bg-button text-white px-4 py-2 rounded">Bids: ${bids.length}</button>
                   </div>`
           : ''
       }
     </div>
 
+    <!-- Modal -->
     <div id="edit-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white text-black p-6 rounded-lg shadow-lg w-full max-w-md relative">
         <button id="close-edit-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✖</button>
@@ -62,29 +64,80 @@ export function renderProfilePage(profile, listings, wins, bids) {
           class="hidden font-roboto font-semibold fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl bg-background-dark dark:bg-background-light text-white dark:text-background-dark py-12 px-12 rounded-lg shadow-lg transition-opacity duration-300 opacity-0"
         ></div>
 
+    <!-- Sections -->
     <div id="listings-container" class="mt-8"></div>
     ${isOwner ? `<div id="wins-container" class="mt-8"></div>` : ''}
     ${isOwner ? `<div id="bids-container" class="mt-8"></div>` : ''}
   `;
 
+  // Initialize Modal Handlers Only if the User Owns the Profile
   if (isOwner) {
-    document.getElementById('listings-btn').addEventListener('click', () => {
-      document
-        .getElementById('listings-container')
-        .scrollIntoView({ behavior: 'smooth' });
-    });
+    setupModalHandlers(
+      {
+        modalId: 'edit-modal',
+        triggerClass: '.edit-banner-btn',
+        closeId: 'close-edit-modal',
+        formId: 'edit-form',
+      },
+      (modal, form) => {
+        form.querySelector('#avatar-url').value = avatar?.url || '';
+        form.querySelector('#banner-url').value = banner?.url || '';
+        form.querySelector('#bio').value = bio || '';
+      },
+      async (formData, modal) => {
+        try {
+          const newBio = formData.get('bio')?.trim();
+          const newAvatarUrl = formData.get('avatar-url')?.trim();
+          const newBannerUrl = formData.get('banner-url')?.trim();
 
-    document.getElementById('wins-btn').addEventListener('click', () => {
-      document
-        .getElementById('wins-container')
-        .scrollIntoView({ behavior: 'smooth' });
-    });
+          if (!newBio && !newAvatarUrl && !newBannerUrl) {
+            console.error('All fields are empty:', {
+              newBio,
+              newAvatarUrl,
+              newBannerUrl,
+            });
+            showToast('Please provide at least one field to update.', 'error');
 
-    document.getElementById('bids-btn').addEventListener('click', () => {
-      document
-        .getElementById('bids-container')
-        .scrollIntoView({ behavior: 'smooth' });
-    });
+            return;
+          }
+          const payload = {};
+          if (newBio) payload.bio = newBio;
+          if (newAvatarUrl) payload.avatar = { url: newAvatarUrl, alt: '' };
+          if (newBannerUrl) payload.banner = { url: newBannerUrl, alt: '' };
+
+          const updatedProfile = await updateProfile(payload.bio, {
+            avatar: payload.avatar,
+            banner: payload.banner,
+          });
+
+          closeModal(modal);
+
+          if (updatedProfile.bio) {
+            const bioElement = document.querySelector('.profile-header p');
+            if (bioElement) bioElement.textContent = updatedProfile.bio;
+          }
+
+          if (updatedProfile.avatar?.url) {
+            const avatarImg = document.querySelector('.profile-header img');
+            if (avatarImg) {
+              avatarImg.src = `${updatedProfile.avatar.url}?t=${Date.now()}`;
+              avatarImg.alt = updatedProfile.avatar.alt || 'Avatar';
+            }
+          }
+
+          if (updatedProfile.banner?.url) {
+            const bannerDiv = document.querySelector('.profile-header');
+            if (bannerDiv) {
+              bannerDiv.style.backgroundImage = `url('${updatedProfile.banner.url}?t=${Date.now()}')`;
+            }
+          }
+          showToast('Profile updated successfully!', 'success');
+        } catch (error) {
+          console.error('Failed to update profile:', error.message);
+          showToast('An error occurred while updating your profile.', 'error');
+        }
+      }
+    );
   }
 
   if (listings && listings.length > 0) {
